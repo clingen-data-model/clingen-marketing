@@ -1,0 +1,48 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+- name: Install httpd
+  apt:
+    name: apache2
+- name: Install php
+  apt:
+    name: php
+- name: Install MariaDB
+  apt:
+    name: mariadb-server
+- name: Install PyMySQL
+  apt:
+    name: python-pymysql
+- name: Install php-pdo-mysql
+  apt:
+    name: php-pdo-mysql
+- name: Create database for processwire
+  mysql_db:
+    name: pw
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+- name: Create processwire user for MariaDB
+  mysql_user:
+    name: pw
+    password: pw
+    priv: 'pw.*:ALL'
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+# - name: Ensure default index.html is removed
+#   file:
+#     state: absent
+#     path: '/var/www/html/index.html'
+- name: Copy local site to destination
+  synchronize:
+    src: '../processwire/'
+    dest: '/var/www/html'
+    archive: no
+    delete: yes
+    recursive: yes
+    rsync_opts:
+      - "--exclude=sess*"
+- name: Bounce httpd
+  systemd:
+    state: restarted
+    name: apache2
+    
+      

@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    mariadb_pw: pw
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    - name: Install httpd
+      apt:
+        name: apache2
+    - name: Install php
+      apt:
+        name: php
+    - name: Install MariaDB
+      apt:
+        name: mariadb-server
+    - name: Install PyMySQL
+      apt:
+        name: python-pymysql
+    - name: Create database for processwire
+      mysql_db:
+        name: pw
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+    - name: Create processwire user for MariaDB
+      mysql_user:
+        name: pw
+        password: pw
+        priv: 'pw.*:ALL'
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+      
