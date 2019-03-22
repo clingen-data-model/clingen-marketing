@@ -11,25 +11,25 @@ if($fetch) {
   foreach ($fetch as $key => $value) {
 
   	if($value->relate_groups->first){
-	  	$render_relate_groups = "<div class='small'><i class=\"fas fa-users\"></i> {$value->relate_groups->first->title}</div>";
-	  }
+      $render_relate_groups = "<div class='small'><i class=\"fas fa-users\"></i> {$value->relate_groups->first->title}</div>";
+    }
 
     $render_item .= "
-      <li class=' list-group-item '>
-          <div class='mr-auto d-flex col-10'>
-            <div class='mr-auto pr-3'>
-              <i class='far fa-file'></i>
-            </div>
-            <div class='mr-auto  flex-grow-1'>
-              <a class='title' href='{$value->httpUrl}'>{$value->title}</a>
-              <div class='small text-muted'>{$value->summary}</div>
-              {$render_relate_groups}
-            </div>
-          </div>
-          <div class='ml-auto col-1'>
-            {$value->documentation_date}
-          </div>
-      </li>
+    <li class=' list-group-item '>
+      <div class='mr-auto d-flex col-10'>
+        <div class='mr-auto pr-3'>
+          <i class='far fa-file'></i>
+        </div>
+        <div class='mr-auto  flex-grow-1'>
+          <a class='title' href='{$value->httpUrl}'>{$value->title}</a>
+        <div class='small text-muted'>{$value->summary}</div>
+        {$render_relate_groups}
+        </div>
+      </div>
+      <div class='ml-auto col-1'>
+        {$value->documentation_date}
+      </div>
+    </li>
     ";
     unset($render_relate_groups);
   }
@@ -48,14 +48,14 @@ unset($fetch);
  */
 $fetch = $pages->get(1021)->children();
 if($fetch) {
-    $render_item .= "
-      <a href='{$page->parent->url}' class=\"list-group-item list-group-item-action d-flex justify-content-between align-items-center\">All Announcements<span class=\"badge badge-pill badge-secondary\">{$document_count}</span></a>
-    ";
+  $render_item .= "
+  <a href='{$page->parent->url}' class=\"list-group-item list-group-item-action d-flex justify-content-between align-items-center\">All Announcements<span class=\"badge badge-pill badge-secondary\">{$document_count}</span></a>
+  ";
   foreach ($fetch as $key => $value) {
     $count = $value->children()->count();
     if($count){
       $render_item .= "
-        <a href='{$value->url}' class=\"list-group-item list-group-item-action d-flex justify-content-between align-items-center\">{$value->title} <span class=\"badge badge-pill badge-secondary\">{$count}</span></a>
+      <a href='{$value->url}' class=\"list-group-item list-group-item-action d-flex justify-content-between align-items-center\">{$value->title} <span class=\"badge badge-pill badge-secondary\">{$count}</span></a>
       ";
     }
   }

@@ -34,115 +34,115 @@ include("App/Views/Partials/render_search_bar.php");
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <title><?=$page->title ?> - <?=$siteRoot->title ?></title>
+  <title><?=$page->title ?> - <?=$siteRoot->title ?></title>
 
-    <!-- Bootstrap core CSS -->
-<!--    <link href="<?= $config->urls->templates ?>resources/packages/bootstrap/css/bootstrap.css" rel="stylesheet">-->
-    <link href="<?= $config->urls->templates ?>resources/packages/bootstrap-3-4-1/css/bootstrap.css" rel="stylesheet">
-<!--    <link href="<?= $config->urls->templates ?>resources/packages/bootstrap-4-3-1/css/bootstrap.css" rel="stylesheet">-->
+  <!-- Bootstrap core CSS -->
+  <!--    <link href="<?= $config->urls->templates ?>resources/packages/bootstrap/css/bootstrap.css" rel="stylesheet">-->
+  <link href="<?= $config->urls->templates ?>resources/packages/bootstrap-3-4-1/css/bootstrap.css" rel="stylesheet">
+  <!--    <link href="<?= $config->urls->templates ?>resources/packages/bootstrap-4-3-1/css/bootstrap.css" rel="stylesheet">-->
 
-    <!-- Custom styles for this template -->
-    <link href="<?= $config->urls->templates ?>resources/css/master.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="<?= $config->urls->templates ?>resources/css/master.css" rel="stylesheet">
 
-    <link href="<?= $config->urls->templates ?>resources/packages/fontawesome/css/all.min.css" rel="stylesheet">
+  <link href="<?= $config->urls->templates ?>resources/packages/fontawesome/css/all.min.css" rel="stylesheet">
 
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <? include("App/Views/Partials/render_header_options.php"); ?>
+  <? include("App/Views/Partials/render_header_options.php"); ?>
 
-    <header>
+  <header>
 
-      <nav class="navbar navbar-light">
-        <div class="container">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header">
-            <button type="button" class="btn btn-lg mt-4 btn-outline-primary navbar-toggle pull-right collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-              <span class="sr-only">Toggle navigation</span>
-              Navigation <i class="fas fa-bars"></i>
-            </button>
-            <a class="navbar-brand" href="/"><img style="height:80px" src="<?= $config->urls->templates ?>resources/img/logo/logo-clinical-genome-logo-vector.svg" class="img-fluid p-0" alt="Responsive image"></a>
-          </div>
-
-          <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right mt-4">
-              
-            <? include("App/Views/Partials/render_header_navigation_main.php") ?>
-            </ul>
-          </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-        <div id="navSearchBar" <?=$showSearchBar  ?>>
-          <div class="container">
-            
-            <?=$search_main ?>
-          </div>
+    <nav class="navbar navbar-light">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="btn btn-lg mt-4 btn-outline-primary navbar-toggle pull-right collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            Navigation <i class="fas fa-bars"></i>
+          </button>
+          <a class="navbar-brand" href="/"><img style="height:80px" src="<?= $config->urls->templates ?>resources/img/logo/logo-clinical-genome-logo-vector.svg" class="img-fluid p-0" alt="Responsive image"></a>
         </div>
-      </nav>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right mt-4">
+            
+            <? include("App/Views/Partials/render_header_navigation_main.php") ?>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+      <div id="navSearchBar" <?=$showSearchBar  ?>>
+        <div class="container">
+          
+          <?=$search_main ?>
+        </div>
+      </div>
+    </nav>
   </header>
 
-    <main id='section_main' role="main">
+  <main id='section_main' role="main">
 
-      <section id='section_heading' class="section-heading section-heading-groups text-light">
-        <div  class="container">
-          <h1><?= $page->title ?></h1>
-        </div>
-      </section>
-      <section id='section_content' class="container">
-      </section>
-
-    </main>
-
-    <div class="" id="clingen_contact">
-      <a href="<?=$pages->get(1140)->httpUrl ?>?title=<?=$feedback_title ?>&page=<?=$feedback_url ?>&ref=<?=$feedback_ref ?>">
-        <i class="far fa-envelope clingen_contact_icon"></i>
-      <div class="">Send Feedback</div>
-      </a>
-    </div>
-
-    <footer class="text-muted">
-      <div id='section_footer' class="container">
-        <? include("App/Views/Partials/render_footer.php") ?>
-        <p class="float-right">
-          <a href="#">Back to top</a>
-        </p>
-        <p> &copy; ClinGen</p>
+    <section id='section_heading' class="section-heading section-heading-groups text-light">
+      <div  class="container">
+        <h1><?= $page->title ?></h1>
       </div>
-    </footer>
+    </section>
+    <section id='section_content' class="container">
+    </section>
+
+  </main>
+
+  <div class="" id="clingen_contact">
+    <a href="<?=$pages->get(1140)->httpUrl ?>?title=<?=$feedback_title ?>&page=<?=$feedback_url ?>&ref=<?=$feedback_ref ?>">
+      <i class="far fa-envelope clingen_contact_icon"></i>
+      <div class="">Send Feedback</div>
+    </a>
+  </div>
+
+  <footer class="text-muted">
+    <div id='section_footer' class="container">
+      <? include("App/Views/Partials/render_footer.php") ?>
+      <p class="float-right">
+        <a href="#">Back to top</a>
+      </p>
+      <p> &copy; ClinGen</p>
+    </div>
+  </footer>
 
 
 
 
-    <? include("App/Views/Partials/_footer_for_admin.php") ?>
+  <? include("App/Views/Partials/_footer_for_admin.php") ?>
 
     <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script  src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+      ================================================== -->
+      <!-- Placed at the end of the document so the pages load faster -->
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script  src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
 
-    <script src="<?= $config->urls->templates ?>resources/packages/popper/popper.min.js"></script>
-<!--    <script src="<?= $config->urls->templates ?>resources/packages/bootstrap/js/bootstrap.min.js"></script>-->
-    <script src="<?= $config->urls->templates ?>resources/packages/bootstrap-3-4-1/js/bootstrap.js"></script>
-<!--    <script src="<?= $config->urls->templates ?>resources/packages/bootstrap-4-3-1/js/bootstrap.js"></script>-->
-    <script src="<?= $config->urls->templates ?>resources/packages/list/list.js"></script>
-    <script src="<?= $config->urls->templates ?>resources/js/master.js"></script>
-    <script src="<?= $config->urls->templates ?>resources/js/tooltips.js"></script>
-    <script src="<?= $config->urls->templates ?>resources/js/list-filters.js"></script>
-    <?=$footer_js ?>
-    <script>
+      <script src="<?= $config->urls->templates ?>resources/packages/popper/popper.min.js"></script>
+      <!--    <script src="<?= $config->urls->templates ?>resources/packages/bootstrap/js/bootstrap.min.js"></script>-->
+      <script src="<?= $config->urls->templates ?>resources/packages/bootstrap-3-4-1/js/bootstrap.js"></script>
+      <!--    <script src="<?= $config->urls->templates ?>resources/packages/bootstrap-4-3-1/js/bootstrap.js"></script>-->
+      <script src="<?= $config->urls->templates ?>resources/packages/list/list.js"></script>
+      <script src="<?= $config->urls->templates ?>resources/js/master.js"></script>
+      <script src="<?= $config->urls->templates ?>resources/js/tooltips.js"></script>
+      <script src="<?= $config->urls->templates ?>resources/js/list-filters.js"></script>
+      <?=$footer_js ?>
+      <script>
        
-      $( "#navSearchToggle" ).click(function() {
-        $( "#navSearchBar" ).toggle();
-      });
-      
+        $( "#navSearchToggle" ).click(function() {
+          $( "#navSearchBar" ).toggle();
+        });
+        
       // Allows Tabs to show on page load
       $(function(){
         var hash = window.location.hash;
@@ -167,7 +167,7 @@ include("App/Views/Partials/render_search_bar.php");
       
     </script>
     <script src="<?= $config->urls->templates ?>resources/js/typeahead.js"></script>    
-     <script>
+    <script>
       $( ".typeQueryGene" ).click(function() {
         $( ".inputQueryGene" ).show();
         $( ".inputQueryDisease" ).hide();
@@ -178,8 +178,8 @@ include("App/Views/Partials/render_search_bar.php");
         $( ".inputQueryDisease" ).show();
         $( ".typeQueryLabel").text("Disease");
       });
-       
-       
+      
+      
       var term = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -198,7 +198,7 @@ include("App/Views/Partials/render_search_bar.php");
           wildcard: '%QUERY'
         }
       });
-       
+      
       var termDisease = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -211,68 +211,68 @@ include("App/Views/Partials/render_search_bar.php");
 
       $('.queryTerm').typeahead(null,
       {
-          name: 'term',
-          display: 'label',
-          source: term,
+        name: 'term',
+        display: 'label',
+        source: term,
 
-          limit: 20,
-          minLength: 3,
-          highlight: true,
-          hint: false,
-          autoselect:true,
+        limit: 20,
+        minLength: 3,
+        highlight: true,
+        hint: false,
+        autoselect:true,
       }).bind('typeahead:selected',function(evt,item){
-          window.location = item.url;
+        window.location = item.url;
       });
-       
+      
       $('.queryDisease').typeahead(null,
       {
-          name: 'termDisease',
-          display: 'label',
-          source: termDisease,
+        name: 'termDisease',
+        display: 'label',
+        source: termDisease,
 
-          limit: 20,
-          minLength: 3,
-          highlight: true,
-          hint: false,
-          autoselect:true,
+        limit: 20,
+        minLength: 3,
+        highlight: true,
+        hint: false,
+        autoselect:true,
       }).bind('typeahead:selected',function(evt,item){
-          window.location = item.url;
+        window.location = item.url;
       });
-       
+      
       $('.queryGene').typeahead(null,
       {
-          name: 'termGene',
-          display: 'label',
-          source: termGene,
+        name: 'termGene',
+        display: 'label',
+        source: termGene,
 
-          limit: 20,
-          minLength: 3,
-          highlight: true,
-          hint: false,
-          autoselect:true,
+        limit: 20,
+        minLength: 3,
+        highlight: true,
+        hint: false,
+        autoselect:true,
       }).bind('typeahead:selected',function(evt,item){
-          window.location = item.url;
+        window.location = item.url;
       });
 
-  </script>
+    </script>
     
     <script type="text/javascript">
 
-        $(document).ready(function () {
-            $('#filter_list :checkbox').click(function () {
-                if ($('input:checkbox:checked').length) {
-                    $('#list_documentation_table li').hide();
-                    $('input:checkbox:checked').each(function () {
-                        $('li[data-' + $(this).prop('name') + '*="' + $(this).val() + '"]').show();
-                    });
-                } else {
-                    $("#list_documentation_table li").show();
-                }
+      $(document).ready(function () {
+        $('#filter_list :checkbox').click(function () {
+          if ($('input:checkbox:checked').length) {
+            $('#list_documentation_table li').hide();
+            $('input:checkbox:checked').each(function () {
+              $('li[data-' + $(this).prop('name') + '*="' + $(this).val() + '"]').show();
             });
+          } else {
+            $("#list_documentation_table li").show();
+          }
         });
+      });
 
     </script>
 
     
   </body>
-</html>
+  </html>

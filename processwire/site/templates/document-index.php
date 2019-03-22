@@ -6,11 +6,11 @@ $type_curation_procedure  = $sanitizer->name($input->get['curation-procedure']);
 
 
 if($type_doc == "curation-activity-procedures") {
-    if(!$type_curation_procedure){
-      $segment = "template=document-type-criteria-show";
-    }else {
-      $segment = "template=document-type-criteria-show, relate_curation_activity={$type_curation_procedure}, sort=-document_criteria_version";
-    }
+  if(!$type_curation_procedure){
+    $segment = "template=document-type-criteria-show";
+  }else {
+    $segment = "template=document-type-criteria-show, relate_curation_activity={$type_curation_procedure}, sort=-document_criteria_version";
+  }
 } else if($type_doc == "publications") {
   $segment = "template=document-type-publication-show";
 } else if($type_doc) {
@@ -18,7 +18,7 @@ if($type_doc == "curation-activity-procedures") {
 }
 
 include("App/Helpers/functions.php");
- 
+
 
 /**
  * Fetch Documents
@@ -50,14 +50,14 @@ if($fetch) {
       $type = "Publications";
     }
     $render_item .= "
-      <li class=' list-group-item'>
-            <div class='p-2'>
-              <a class='title' href='{$value->httpUrl}'><strong>{$value->title}</strong></a>
-              <div class='small text-muted'><strong><i class='far fa-file'></i> {$type}  - </strong> {$value->document_date} {$render_summary}</div>
-              {$render_relate_groups}
-            {$value->documentation_date}
-          </div>
-      </li>
+    <li class=' list-group-item'>
+    <div class='p-2'>
+    <a class='title' href='{$value->httpUrl}'><strong>{$value->title}</strong></a>
+    <div class='small text-muted'><strong><i class='far fa-file'></i> {$type}  - </strong> {$value->document_date} {$render_summary}</div>
+    {$render_relate_groups}
+    {$value->documentation_date}
+    </div>
+    </li>
     ";
   }
   $render_documentation_items = "<ul class='list-group list-group-flush list'>".$render_item."</ul>";
@@ -80,8 +80,8 @@ include("App/Views/Partials/render_documents_side_nav.php");
 ?>
 <div pw-replace="section_heading">
   <div  class="container">
-      <div class="content pb-2">
-        <div class="section-heading-content" edit="body_1"><?=($type) ? "<h1>{$type}</h1>" : $page->body_1 ?></div>
+    <div class="content pb-2">
+      <div class="section-heading-content" edit="body_1"><?=($type) ? "<h1>{$type}</h1>" : $page->body_1 ?></div>
     </div>
   </div>
 </div>
@@ -95,13 +95,13 @@ include("App/Views/Partials/render_documents_side_nav.php");
         <div class="card-header w-100 input-group mb-1">
             <input type="text" class="form-control search" placeholder="Filter list..." aria-label="Filter list">
         </div>
--->
-        <?=$render_documentation_items ?>
-      </div>
-    </div>
-    
-    <div class="col-sm-3">
-      <?=$render_nav_documentation_types?>
+      -->
+      <?=$render_documentation_items ?>
     </div>
   </div>
+  
+  <div class="col-sm-3">
+    <?=$render_nav_documentation_types?>
+  </div>
+</div>
 </div>

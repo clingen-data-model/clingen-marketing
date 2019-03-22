@@ -1,16 +1,16 @@
 <?
-	if(!$page->body_1) {
-	  $session->redirect($page->url_gitrepository);
-	}
-	include("App/Helpers/functions.php");
-	include("App/Views/Partials/render_documents_side_nav.php");
+if(!$page->body_1) {
+ $session->redirect($page->url_gitrepository);
+}
+include("App/Helpers/functions.php");
+include("App/Views/Partials/render_documents_side_nav.php");
 ?>
 
 
 <div pw-replace="section_heading">
   <div  class="container">
-      <div class="content pb-2">
-        <h1 class="m-0 p-0"><?=$page->parent->title ?></h1>
+    <div class="content pb-2">
+      <h1 class="m-0 p-0"><?=$page->parent->title ?></h1>
     </div>
   </div>
 </div>

@@ -1,8 +1,8 @@
 <div pw-prepend="section_content">
 
 	<span  edit="body_1">
-	<?=$page->body_1?>
-</span>
+		<?=$page->body_1?>
+	</span>
 
 </div>
 

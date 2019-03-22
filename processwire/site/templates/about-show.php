@@ -1,11 +1,11 @@
 <?
-		$img = ($page->image_icon_1) ? $page->image_icon_1->size(600,600)->url : $config->imgSquareStandard;
+$img = ($page->image_icon_1) ? $page->image_icon_1->size(600,600)->url : $config->imgSquareStandard;
 ?>
 
 <div pw-replace="section_heading">
-  <div  class="container">
-  	<div class="">
-	  	<div class="content  pr-md-5">
+	<div  class="container">
+		<div class="">
+			<div class="content  pr-md-5">
 				<h1 class="section-heading-content"><?=$page->title ?></h1>
 		  </div><!-- 
 		  <div class="col-sm-2 ">
@@ -21,8 +21,8 @@
 			<?=$page->body_1?>
 		</div>
 		<div class="col-sm-3">
-	     <? include("App/Views/Partials/render_root_parent_pages_as_side_nav.php"); ?>
-	  </div>
+			<? include("App/Views/Partials/render_root_parent_pages_as_side_nav.php"); ?>
+		</div>
 	</div>
 </div>
 

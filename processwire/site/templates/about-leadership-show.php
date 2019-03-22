@@ -1,28 +1,28 @@
 <?
-		$text_membership_prefix = "";
+$text_membership_prefix = "";
 
 
 
-    foreach($page->relate_groups as $leadership_members_key => $leadership_members ) {
-		  include("App/Views/Partials/render_group_members.php");
-        $render_membership_leaders .= $render_membership;
-    }
+foreach($page->relate_groups as $leadership_members_key => $leadership_members ) {
+	include("App/Views/Partials/render_group_members.php");
+	$render_membership_leaders .= $render_membership;
+}
 
-		foreach ($nav_pill as $key => $value) {
-			$render_nav_pill .= $value;
-		}
+foreach ($nav_pill as $key => $value) {
+	$render_nav_pill .= $value;
+}
 
 ?>
 
 <div pw-replace="section_heading">
-  <div  class="container">
-  	<div class="">
-	  	<div class="content col-12">
+	<div  class="container">
+		<div class="">
+			<div class="content col-12">
 				<div class="section-heading-content" edit="body_1">
-          <?=($page->body_1) ? $page->body_1 : "<h1>".$page->title."</h1>"; ?>
-          <?=$render_nav_pill ?>
-        </div>
-		  </div>
+					<?=($page->body_1) ? $page->body_1 : "<h1>".$page->title."</h1>"; ?>
+					<?=$render_nav_pill ?>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -34,7 +34,7 @@
 			<?= $render_membership_leaders ?>
 		</div>
 		<div class="col-sm-3">
-	     <? include("App/Views/Partials/render_root_parent_pages_as_side_nav.php"); ?>
-	  </div>
+			<? include("App/Views/Partials/render_root_parent_pages_as_side_nav.php"); ?>
+		</div>
 	</div>
 </div>

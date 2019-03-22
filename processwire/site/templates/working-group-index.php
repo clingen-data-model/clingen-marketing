@@ -1,9 +1,9 @@
 <div pw-replace="section_heading">
-  <div  class="container">
-  	<div class="">
-	  	<div class="content  flex-grow-1 pr-md-5">
+	<div  class="container">
+		<div class="">
+			<div class="content  flex-grow-1 pr-md-5">
 				<div class="section-heading-content" edit="body_1"><?=($page->body_1) ? $page->body_1 : "<h1>".$page->title."</h1>"; ?></div>
-		  </div>
+			</div>
 		</div>
 	</div>
 </div>

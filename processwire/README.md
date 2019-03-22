@@ -1,19 +1,16 @@
-# Welcome to ProcessWire 3.x 
+# ClinGen Marketing Website
 
 This document is in Markdown. An HTML formatted version of this document 
 can be read at: https://github.com/processwire/processwire/blob/master/README.md
 
 
-## Table of Contents
+## Installing ProcessWire
 
-1. [About](#about-processwire)
-2. [Installation](#installing-processwire)
-3. [Upgrading](#upgrading-processwire)
-4. [Troubleshooting](https://processwire.com/docs/install/troubleshooting/)
-5. [Support](#support-and-links)
+htaccess.txt
+config-sample.php
 
 
-## About ProcessWire
+## Website Uses ProcessWire CMS
 
 ProcessWire is an open source content management system (CMS) and web 
 application framework aimed at the needs of designers, developers and their 

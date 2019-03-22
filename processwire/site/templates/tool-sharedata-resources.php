@@ -3,26 +3,26 @@
 $fetch = $page->repeater_external_genomic_resources('sort=label_1');
 if($fetch) {
   foreach ($fetch as $key => $value) {
-    
-    
+
+
     $img = ($value->image_1->url) ? $value->image_1->size(600,600)->url : $config->imgSquareStandard;
 
     $render_item .= "
-      <div class='col-md-12 '>
-        <div class=\"card mb-2  \">
-           <div class=\"row no-gutters bg-light \">
-            <div class=\"col-md-1 hidden-sm hidden-xs align-self-top \">
-             <a class='' target='resource' href='{$value->url_general}'> <img src=\"{$img}\" class=\"card-img p-3\" alt=\"{$value->label_1}\"></a>
-            </div>
-            <div class=\"col-md-11 bg-white\">
-              <div class=\"card-body\">
-                <a class='' target='resource' href='{$value->url_general}'><h5 class=\"card-title\">{$value->label_1} <i class=\"fas fa-external-link-alt\"></i></h5></a>
-                <p class=\"small\">{$value->summary}</p>
-              </div>
+    <div class='col-md-12 '>
+      <div class=\"card mb-2  \">
+        <div class=\"row no-gutters bg-light \">
+          <div class=\"col-md-1 hidden-sm hidden-xs align-self-top \">
+            <a class='' target='resource' href='{$value->url_general}'> <img src=\"{$img}\" class=\"card-img p-3\" alt=\"{$value->label_1}\"></a>
+          </div>
+          <div class=\"col-md-11 bg-white\">
+            <div class=\"card-body\">
+              <a class='' target='resource' href='{$value->url_general}'><h5 class=\"card-title\">{$value->label_1} <i class=\"fas fa-external-link-alt\"></i></h5></a>
+              <p class=\"small\">{$value->summary}</p>
             </div>
           </div>
         </div>
       </div>
+    </div>
     ";
     
      // This is how to equitabily handle wrapping nicely without having to clear.  Downside is it wraps in div
@@ -39,18 +39,18 @@ if($fetch) {
   unset($render_item);
 }
 
-    $img = ($page->image_1) ? $page->image_1->width(800)->url : $config->imgSquareStandard;
+$img = ($page->image_1) ? $page->image_1->width(800)->url : $config->imgSquareStandard;
 
 ?>
 
 <div pw-replace="section_heading" class="">
   <div  class="container">
   	<div class="">
-	  	<div class="content">
-				<div class="section-heading-content" edit="body_1"><?=($page->body_1) ? $page->body_1 : "<h1>".$page->title."</h1>"; ?></div>
-		  </div>
-		</div>
-	</div>
+      <div class="content">
+        <div class="section-heading-content" edit="body_1"><?=($page->body_1) ? $page->body_1 : "<h1>".$page->title."</h1>"; ?></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div pw-prepend="section_content">
@@ -74,12 +74,12 @@ if($fetch) {
           <li>Dolorum luptatum at est, id alia aeque vituperatoribus mei, est at verear intellegebat consectetuer.</li>
         </ul>
       </td>
-      </tr>
+    </tr>
     <tr>
       <td width="" class="pt-4 pb-4" colspan="2">
         <hr class="" />
-        </td>
-      </tr>
+      </td>
+    </tr>
     <tr>
       <td width="25%" valign="top"><img src="https://clingen2019v2.creationproject.net/site/assets/files/2270/project_logo.jpg" class="img-fluid">
       </td>
@@ -93,12 +93,12 @@ if($fetch) {
         </ul>
         <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
       </td>
-      </tr>
+    </tr>
     <tr>
       <td width="" class="pt-4 pb-4" colspan="2">
         <hr />
-        </td>
-      </tr>
+      </td>
+    </tr>
     <tr>
       <td width="25%" valign="top"><img src="https://clingen2019v2.creationproject.net/site/assets/files/2270/project_logo_copy_copy.jpg" class="img-fluid">
       </td>
@@ -112,10 +112,10 @@ if($fetch) {
         </ul>
         <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
       </td>
-      </tr>
-    </table>
+    </tr>
+  </table>
   <hr />
   <h3>List of Genomic Resources</h3>
   Navigate each genomic resources below and query each resource individually. 
-	<?=$render_items ?>
+  <?=$render_items ?>
 </div>
