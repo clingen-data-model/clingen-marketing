@@ -1,0 +1,1771 @@
+<?php
+
+/**
+ * ProcessWire Pro Cache
+ *
+ * Copyright (C) 2017 by Ryan Cramer 
+ *
+ * This is a commercially licensed and supported module
+ * DO NOT DISTRIBUTE
+ *
+ * https://processwire.com
+ * 
+ * @todo Add support for no-minify on inline-level tags like <code>
+ *
+ * @property null|int|bool $cacheOn
+ * @property int|bool $htAllow Allow writing to .htaccess file?
+ * @property bool $debug
+ * @property int $cacheTime
+ * @property string $cacheTimeCustom
+ * @property array $cacheTemplates
+ * @property array $cacheClear
+ * @property string $cacheClearCustom
+ * @property array $minifyTemplates
+ * @property string $minifyIgnoreTags
+ * @property string $minifyBlocks
+ * @property string $minifyRemoveBlankAttr
+ * @property array $minifyOptions
+ * @property array $minifyHTMLOptions
+ * @property int $minifyMaxImportCSS
+ * @property string $noCacheGetVars
+ * @property string $noCacheCookies
+ * @property int $urlSegments
+ * @property int $https
+ * @property array $cacheHosts
+ * @property string $bodyClass
+ * @property string $licenseKey
+ * @property string $cdnHosts
+ * @property string $cdnExts
+ * @property string $cdnAttrs
+ * @property array $cdnTemplates
+ * @property int $cdnStatus
+ * @property bool|int $canonical
+ * 
+ * @method bool allowCacheForPage(Page $page)
+ * 
+ */
+
+class ProCache extends WireData implements Module, ConfigurableModule {
+
+	/**
+	 * getModuleInfo is a module required by all modules to tell ProcessWire about them
+	 *
+	 * @return array
+	 *
+	 */
+	public static function getModuleInfo() {
+
+		return array(
+			'title' => 'ProCache', 
+			'version' => 317, 
+			'summary' => 'For a big performance boost, Pro Cache delivers site pages as static files without PHP or MySQL.',
+			'author' => 'Ryan Cramer Design, LLC',
+			'href' => 'https://processwire.com/ProCache/',
+			'singular' => true, 
+			'autoload' => true, 
+			'icon' => 'fighter-jet',
+			'installs' => 'ProcessProCache'
+			);
+	}
+
+	/**
+	 * Minimum ProcessWire version to run ProCache
+	 *
+	 */
+	const MIN_PW_VERSION = '2.7.2';
+
+	/**
+	 * Database table used by this module
+	 *
+	 * Note that this table is used only for keeping track of expiration times,
+	 * as a result, we don't spend CPU time keeping it consistent with the file
+	 * system except when it is applicable. Meaning, you may see inaccurate data
+ 	 * in this table from time to time before it expires and is deleted--all ok.
+	 *
+	 */
+	const DB_TABLE = 'pages_procache';
+	
+	/**
+	 * Cache clear: clear self (note: this is always assumed)
+	 *
+	 */
+	const CACHE_CLEAR_SELF = 0; 
+
+	/**
+	 * Cache clear: clear children
+	 *
+	 */
+	const CACHE_CLEAR_CHILDREN = 1; 
+
+	/**
+	 * Cache clear: clear all parents, except homepage
+	 *
+	 */
+	const CACHE_CLEAR_PARENTS = 2; 
+
+	/**
+	 * Cache clear: clear homepage
+	 *
+	 */
+	const CACHE_CLEAR_HOME = 3; 
+
+	/**
+	 * Cache clear: clear entire site
+	 *
+	 */
+	const CACHE_CLEAR_SITE = 4;
+	
+	/**
+	 * Cache clear: clear specific page IDs
+	 *
+	 */
+	const CACHE_CLEAR_PAGES = 5;
+	
+	/**
+	 * Cache clear: clear pages matching selector
+	 *
+	 */
+	const CACHE_CLEAR_SELECTOR = 6; 
+
+	/**
+	 * Max number of URL-based page numbers that are supported per page (where template allows)
+	 *
+ 	 */
+	const MAX_PAGE_NUM = 1000; 
+
+	/**
+	 * Number of seconds between maintenance runs
+	 *
+	 */
+	const MAINTENANCE_SECONDS = 30;
+
+	/**
+	 * Current version for .htaccess file tweaks
+	 * 
+	 */
+	const HTACCESS_TWEAKS_VERSION = "3.0"; 
+
+	/**
+	 * CDN statuses
+	 * 
+	 */
+	const CDN_STATUS_OFF = 0;
+	const CDN_STATUS_GUEST = 1;	// on for guests only
+	const CDN_STATUS_USERS = 2;	// on for logged in users only
+	const CDN_STATUS_ALL = 3;	// on for all visitors
+	
+	/**
+	 * Timer of page render time, used when in test/debug mode
+	 *
+	 */
+	protected $timer; 
+
+	/**
+	 * ID of page that we are hooking for render
+	 *
+	 */
+	protected $renderPageID = 0; 
+
+	/**
+	 * Segment for directory name off /site/assets/
+	 *
+	 */
+	protected $cacheDir = 'ProCache';
+
+	/**
+	 * Debug info to include as HTML comment at end of output
+	 *
+	 */
+	protected $debugInfo = array();
+
+	/**
+	 * Construct and establish defaults for our config settings
+	 *
+	 */
+	public function __construct() {
+		
+		$config = $this->wire('config');
+		
+		$this->set('cacheOn', null); // null==not yet set
+		$this->set('debug', false); 
+		$this->set('cacheTime', 3600); 
+		$this->set('cacheTimeCustom', ''); 
+		$this->set('cacheTemplates', array()); 
+		$this->set('cacheClear', array(self::CACHE_CLEAR_SITE)); 
+		$this->set('cacheClearCustom', '');
+	
+		// allow writing to .htaccess file?
+		$this->set('htAllow', false); 
+		
+		// IDs of templates allowed to perform minify on
+		$this->set('minifyTemplates', array());
+		
+		// tags to not minify
+		$this->set('minifyIgnoreTags', 'textarea pre');
+		
+		// block level (and other) elements where whitespace will be removed around them
+		$this->set('minifyBlocks', '!doctype address article aside audio blockquote body br button canvas caption col colgroup dd div dl dt embed fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html li link main map meta nav noscript object ol optgroup option output p pre progress script section table tbody td tfoot th thead title tr ul video');
+		
+		// blank attributes to remove (when combined with minifyHTMLOptions=unquote
+		$this->set('minifyRemoveBlankAttr', 'class dir for id lang style title'); 
+		
+		// htmlGuest, htmlUsers, jsHead, jsBody, cssHead, useTemplates
+		// general minfication options
+		$this->set('minifyOptions', array(
+			// htmlGuest	
+			// htmlUsers
+			// htmlCache
+			// jsHead
+			// jsBody
+			// cssHead
+			// useTemplates
+		)); 
+	
+		// options for HTML minification
+		 $this->set('minifyHTMLOptions', array(
+			'js', 				// minify inline js
+			'css', 				// minify inline css
+			'uncomment',		// remove HTML comments
+			'noXHTML', 			// remove XHTML style <tag /> closing tags to just <tag>
+			'unblank', 			// remove blank attributes (where allowed, see minifyRemoveBlankAttr)
+			'untag', 			// remove unnecessary HTML closing tags?
+			'unattr',			// remove useless/unnecessary attributes? 
+			'unbool',			// collapse boolean attributes
+			'unquote',			// unquote attributes where allowed
+			// 'hrefs', 		// convert absolute href attributes to relative, when relative is shorter
+		));
+		
+		// max kilobytes to allow for files encoded directly into the css
+		$this->set('minifyMaxImportCSS', 5); 
+	
+		// cookie names that should bypass the cache
+		$cookies = 
+			($config->sessionName . "_challenge\n") . 
+			($config->sessionNameSecure ? $config->sessionNameSecure : $config->sessionName . 's') . '_challenge';
+
+		$this->set('noCacheCookies', $cookies);
+		$this->set('noCacheGetVars', '*');  
+		$this->set('urlSegments', 0); 
+		$this->set('https', 0); 
+		$this->set('cacheHosts', array()); 
+		$this->set('bodyClass', '');
+		$this->set('canonical', '0');
+		$this->set('licenseKey', '');
+		$this->set('cdnHosts', ''); 
+		$this->set('cdnExts', ''); 
+		$this->set('cdnAttrs', 'src srcset href');
+		$this->set('cdnTemplates', array());
+		$this->set('cdnStatus', self::CDN_STATUS_OFF); // see CDN_STATUS constants
+		
+		$this->wire('procache', $this, true);
+	}
+	
+	/**
+	 * Initialize the cache and attach hooks
+	 *
+	 */
+	public function init() {
+		if(!$this->isValidLicense() || !$this->cacheOn) return;
+
+		// hook called when a page has been saved
+		$this->pages->addHookAfter('save', $this, 'hookPageSaved', array('priority' => 200)); 
+		$this->pages->addHookAfter('saveField', $this, 'hookPageSaved', array('priority' => 200)); 
+
+		// hook called when a page has been deleted
+		$this->pages->addHookAfter('deleted', $this, 'hookPageDeleted');
+
+		// execute cache maintenance tasks every 30 seconds
+		$this->addHook('ProcessPageView::finished', $this, 'cacheMaintenance'); 
+	
+		// hook into template cache clearing
+		$this->addHook('PageRender::clearCacheFileAll', $this, 'hookPageRenderClearCacheAll');
+		$this->addHook('PageRender::clearCacheFilePages', $this, 'hookPageRenderClearCachePages');
+	}
+
+	/**
+	 * Determine if current page is a caching candidate and attach hooks if so
+	 *
+	 */
+	public function ready() {
+
+		if(!$this->isValidLicense() || !$this->cacheOn) return;
+
+		$page = $this->page;
+		// add helper notices about ProCache to page and template editors
+		if($page->template == 'admin') {
+			$this->addHookAfter('ProcessPageEdit::buildFormSettings', $this, 'hookPageEdit');
+			// $this->addHookAfter('ProcessTemplateEdit::buildForm', $this, 'hookTemplateEdit'); // @todo
+		}
+
+		$this->addHookAfter('Page::render', $this, 'hookPageRender', array('priority' => 200));
+		
+		// record the ID of the page we are intending to render
+		// so that it can be double checked in our render hook
+		$this->renderPageID = $page->id;
+
+		// start an informational timer if we are allowed to add to HTML
+		if($this->debug || $this->wire('config')->debug) $this->timer = Debug::timer('ProCache');
+	}
+
+	/**
+	 * Set a config value
+	 *
+	 * In this case, we capture a license key set() and use that to set our
+	 * pseudo random cache directory name. 
+	 * 
+	 * @param string $key
+	 * @param mixed $value
+	 * @return ProCache|WireData
+	 *
+	 */
+	public function set($key, $value) {
+
+		if($key === 'licenseKey' && strlen($value) > 15) {
+			if(strlen($this->licenseKey) && $value != $this->licenseKey) $this->clearAll();
+			$pos = strrpos($value, '.')+1;
+			$dir = $this->wire('sanitizer')->name(substr($value, $pos, $pos+16)); 
+			$this->cacheDir = 'ProCache-' . $dir;
+
+		} else if($key === 'cacheOn' && !is_null($value)) {
+			$value = (bool) $value; 
+			$this->toggleCache($value);
+		}
+
+		return parent::set($key, $value);
+	}
+
+	/**
+	 * Toggle the cache on or off
+	 *
+	 * @param bool $value True to enable, false to disable
+	 * 
+	 */
+	protected function toggleCache($value) {
+
+		$onPath = $this->getCachePath();
+		$offPath = rtrim($onPath, '/') . '-off/';
+
+		if($value && !is_dir($onPath) && is_dir($offPath)) {
+			// turn ON
+			rename($offPath, $onPath);
+
+		} else if(!$value && is_dir($onPath) && !is_dir($offPath)) {
+			// turn OFF
+			rename($onPath, $offPath);
+		}
+	}
+
+	/**
+	 * Return a config value
+	 * 
+	 * @param string $key
+	 * @return mixed
+	 * 
+	 */
+	public function get($key) {
+		if($key == 'cacheDir') return $this->cacheDir; 
+		return parent::get($key);
+	}
+
+	/**
+	 * Return the path where we store cache files, optionally for a page 
+	 * 
+	 * @param Page|null $page
+	 * @param int $pageNum
+	 * @param array $urlSegments
+	 * @return string
+	 *
+ 	 */
+	public function getCachePath(Page $page = null, $pageNum = 1, $urlSegments = array()) {
+		$cacheDir = $this->sanitizer->name($this->cacheDir);
+		if(!strlen($cacheDir)) $cacheDir = 'ProCache';
+		$path = $this->config->paths->assets . $cacheDir . '/';
+		if(!is_dir($path) && $this->cacheOn) wireMkdir($path);
+
+		if(!is_null($page)) {
+			$segments = explode('/', $page->path()); 
+			foreach($urlSegments as $s) $segments[] = $s; 
+			if($pageNum > 1) $segments[] = $this->config->pageNumUrlPrefix . $pageNum;
+			foreach($segments as $segment) {
+				if(!strlen($segment)) continue; 
+				$path .= $segment . '/';
+				if(!is_dir($path) && $this->cacheOn) wireMkdir($path); 
+			}
+		}
+		return $path;
+	}
+
+	/**
+	 * Removes a path
+	 *
+	 * Unlike wireRmdir (function), this one renames the directory first so that they can't be
+	 * displayed by Apache or written by PW while in the process of being removed. 
+	 * 
+	 * @param string $path
+	 * @param bool $recursive
+	 * @return bool
+	 *
+	 */
+	protected function wireRmdir($path, $recursive) {
+		if(!is_dir($path)) return false;
+		$n = 1; 
+		$tmpPath = $this->config->paths->assets . 'ProCache-tmp';
+		while(is_dir($tmpPath . $n)) $n++;
+		$tmpPath .= $n . '/';
+		rename($path, $tmpPath); 
+		return wireRmdir($tmpPath, $recursive);
+	}
+
+	/**
+	 * Returns whether the given license key is valid for the domain its running on
+	 *
+	 * @return bool
+	 *
+	 */
+	public function isValidLicense() {
+		return strpos($this->licenseKey, 'PWPC') === 0; 
+	}
+
+	/**
+	 * Cache maintenance to occur every 30 seconds
+	 *
+	 * This cleans out cache files and entries that have expired
+	 *
+	 */
+	public function cacheMaintenance() {
+
+		$cachePath = $this->getCachePath();
+		$maintenanceFile = $cachePath . ".run-maintenance";
+		$lastMaintenanceFile = $cachePath . ".last-maintenance";
+		$time = time();
+
+		// check if maintenance has already occurred within the last 30 seconds
+		if(is_file($lastMaintenanceFile)) {
+			if(filemtime($lastMaintenanceFile) + self::MAINTENANCE_SECONDS > $time) return;
+			unlink($lastMaintenanceFile); 
+		}
+
+		// check if maintenance is already occurring under another request
+		if(is_file($maintenanceFile) && filemtime($maintenanceFile) > ($time - 30)) return; 
+
+		$timeStr = date('Y-m-d H:i:s'); 
+
+		// reserve the maintenance file
+		file_put_contents($maintenanceFile, "Started $timeStr", LOCK_EX);
+
+		// handle cacheTimeCustom	
+		$where = '';
+		$templateIDs = array();
+		
+		foreach($this->getCacheTime() as $templateName => $cacheTime) {
+			if($cacheTime < 1 || $cacheTime == $this->cacheTime) continue;
+			$template = $this->templates->get($this->sanitizer->name($templateName));
+			if(!$template) continue;
+			$maxAge = date('Y-m-d H:i:s', $time - $cacheTime);
+			$templateID = (int) $template->id;
+			$where .= ($where ? 'OR ' : '') . "(created<'$maxAge' AND templates_id=$templateID) ";
+			$templateIDs[] = $templateID;
+		}
+
+		$table = self::DB_TABLE; 
+		$maxAge = date('Y-m-d H:i:s', $time - $this->cacheTime);
+
+		if($where) $where .= " OR (created<'$maxAge' AND templates_id NOT IN(" . implode(',', $templateIDs) . "))";
+			else $where .= "created<'$maxAge'";
+
+		$sql = "SELECT path, templates_id FROM $table WHERE $where ORDER BY created ASC"; 
+		$query = $this->wire('database')->prepare($sql); 
+		$query->execute();
+		$cnt = 0;
+		$hosts = $this->cacheHosts; 
+		$httpsOK = $this->https; 
+		if(!count($hosts)) $hosts = array(''); 
+
+		while($row = $query->fetch(PDO::FETCH_NUM)) {
+			list($path, $templateID) = $row; 
+			$template = $this->wire('templates')->get((int) $templateID);
+			$ext = $template ? $this->getContentTypeExt($template) : 'html';
+			foreach($hosts as $host) {
+				foreach(array(false, true) as $https) {
+					if($https && !$httpsOK) continue; 
+					$index = $this->cacheIndexBasename($host, $https, $ext); 
+					$file = $cachePath . ltrim($path, '/') . $index; 
+					if(!is_file($file)) continue; 
+					$cnt++;
+					unlink($file);
+				}
+			}
+		}
+
+		$query->closeCursor();
+
+		if($cnt) $this->wire('database')->exec("DELETE FROM $table WHERE $where");
+		@unlink($maintenanceFile);
+
+		// record the last run time
+		file_put_contents($lastMaintenanceFile, "Maintenance last run on $timeStr and cleared $cnt cache files."); 
+		if($this->config->chmodFile) chmod($lastMaintenanceFile, octdec($this->config->chmodFile));
+	}
+
+	/**
+	 * Cache clearing to occur when a page is saved
+	 * 
+	 * @param HookEvent $event
+	 *
+	 */
+	public function hookPageSaved(HookEvent $event) {
+
+		$cachePath = $this->getCachePath();
+		$clearedParents = false;
+		// $clearedChildren = false;
+		// $clearedHome = false;
+		/** @var Page $page */
+		$page = $event->arguments[0]; 
+		
+		if($page->hasStatus(Page::statusUnpublished)) {
+			$this->clearPage($page); // just in case it was published before
+			return;
+		}
+
+		if($page->hasStatus(Page::statusUnpublished) || $page->hasStatus(Page::statusDraft)) {
+			if(!$page->statusPrevious || $page->statusPrevious == $page->status) {
+				$this->clearPage($page); // just in case it was published before
+				return;
+			} else {
+				// fall through to same rules as if it was published, since status may have just changed
+			}
+		}
+		
+		if($page->template->cache_time < 0) {
+			// already handled by one of the PageRender::clearCacheFile hooks
+			return; 
+		}
+		
+		$rules = $this->getCacheClearBehaviors($page->template);
+
+		if(in_array(self::CACHE_CLEAR_SITE, $rules)) {
+			// clear all of cache
+			$this->clearAll();
+			return;
+		}
+
+		// clear page (intentionally separate from children)
+		$this->clearPage($page);
+
+		if(in_array(self::CACHE_CLEAR_CHILDREN, $rules)) {
+			// clears page and children
+			$path = $cachePath . ltrim($page->path(), '/'); 
+			if($path && is_dir($path)) $this->wireRmdir($path, true); 
+			// $clearedChildren = true; 
+		}
+
+		if(in_array(self::CACHE_CLEAR_PARENTS, $rules)) { 
+			// clear parent pages
+			foreach($page->parents as $parent) {
+				if($parent->id <= 1) continue; 
+				$this->clearPage($parent); 
+			}
+			$clearedParents = true; 
+		}
+
+		if(in_array(self::CACHE_CLEAR_HOME, $rules)) {
+			// clear homepage
+			/** @var Page $homepage */
+			$homepage = $this->pages->get(1);
+			$this->clearPage($homepage); 
+			// $clearedHome = true; 
+		}
+
+		if($page->parentPrevious) {
+			// if page had a previous parent, clear it too
+			$this->clearPage($page->parentPrevious); 
+			if(!$clearedParents) $this->clearPage($page->parent); 
+		}
+
+		if($page->namePrevious) {
+			// if page's name changed, clearPage already wiped out everything below it
+			// but clear the immediate parent too, as a bonus
+			if(!$clearedParents) $this->clearPage($page->parent); 
+		}
+	}
+
+	/**
+	 * Handled a deleted page
+	 * 
+	 * @param HookEvent $event
+	 *
+	 */
+	public function hookPageDeleted(HookEvent $event) {
+		$page = $event->arguments[0]; 
+		$path = $this->getCachePath($page); 
+		if($path) $this->wireRmdir($path, true);
+		$sql = "DELETE FROM " . self::DB_TABLE . " WHERE pages_id=:pages_id"; 	
+		$query = $this->wire('database')->prepare($sql); 
+		$query->bindValue(':pages_id', (int) $page->id); 
+		$query->execute();
+	}
+
+	/**
+	 * Hook to PageRender::clearCacheAll (PW 2.6.9+)
+	 * 
+	 * @param HookEvent $event
+	 * 
+	 */
+	public function hookPageRenderClearCacheAll(HookEvent $event) {
+		$page = $event->arguments(0);
+		if($page->template->cache_time < 0) {
+			$this->clearAll();
+		}
+	}
+
+	/**
+	 * Hook to PageRender::clearCachePages (PW 2.6.9+)
+	 *
+	 * @param HookEvent $event
+	 *
+	 */
+	public function hookPageRenderClearCachePages(HookEvent $event) {
+		$items = $event->arguments(0);
+		$page = $event->arguments(1);
+		if($page->template->cache_time >= 0) return; // not handled by ProCache
+		if(!$items->has($page)) $this->clearPage($page);
+		$this->clearPages($items);
+	}
+
+	/**
+	 * Populate CDN replacements
+	 * 
+	 * @param $out
+	 * @param string $type Either 'html' or 'css'
+	 * @return bool Returns true if replacements were made, false if not
+	 * 
+	 */
+	public function populateCDN(&$out, $type = 'html') {
+		
+		if(empty($this->cdnHosts)) return false;
+		$timer = $this->debug || $this->wire('config')->debug ? Debug::timer('ProCacheCDN') : null;
+
+		$lines = explode("\n", $this->cdnHosts);
+		$exts = $this->cdnExts ? explode(' ', trim($this->cdnExts)) : array();
+		$attrs = $this->cdnAttrs ? explode(' ', trim($this->cdnAttrs)) : array(); // for type=html only
+		foreach($exts as $k => $v) if(empty($v)) unset($exts[$k]);
+		foreach($attrs as $k => $v) if(empty($v)) unset($attrs[$k]);
+		$exts = count($exts) ? '\.(?:' . implode('|', $exts) . ')' : '\.[a-z0-9]+';
+		$attrs = count($attrs) ? implode('|', $attrs) : '[a-z]+';
+		$replacements = array();
+		$rootURL = $this->wire('config')->urls->root;
+
+		foreach($lines as $line) {
+			// example of $line: /site/ = cdn.host.com
+			if(strpos($line, '=') === false) continue;
+
+			$line = trim($line);
+			list($path, $host) = explode('=', $line);
+
+			// prepare the path
+			$path = trim($path); 
+			if($rootURL != '/' && strpos($path, $rootURL) === 0) {
+				// path specifies root subdirectory already
+			} else {
+				$path = $rootURL . ltrim($path, '/');
+			}
+			// make sure path ends with a slash
+			$path = rtrim($path, '/') . '/';
+			
+			// if path doesn't start with a slash, fix that
+			if(strpos($path, '/') !== 0) $path = "/$path";
+		
+			// if the path is not referenced anywhere in the output, we can early exit
+			if(strpos($out, $path) === false) continue;
+
+			// prepare the host
+			$host = trim($host);
+			$host = rtrim($host, '/') . '/';
+			if(strpos($host, '//') === false) {
+				// host does not specify a scheme/protocol, so add "//" to account for http and https
+				$host = '//' . $host;
+			} else if(stripos($host, 'http://') === 0) {
+				// don't populate http CDNs when request is https and host only designates http
+				if($this->wire('config')->https) continue; 	
+			}
+
+			if($type == 'html') {
+				// html replacement of paths
+				//        1:attr          2:quote1       3:path                                 4:extra (srcset or quote2)
+				$re = '!\b(' . $attrs . ')(\s*=\s*["\']?)(' . $path . '[^"\'\s>]*?' . $exts . ')\b([^"\'>]*)!i';
+				
+				// $re = '!\b(' . $attrs . ')(\s*=\s*["\']?)(' . $path . '[^"\'\s>]*?' . $exts . ')([\'"]|\s|>)!i';
+			} else if($type == 'css') {
+				// css replacement of paths
+				//     1:attrs     2:quote1   3:path                            4:quote2
+				$re = '!(:\s*url\()(["\']?)(' . $path . '[^"\')]*?' . $exts . ')([\'"]?\))!i';
+			} else {
+				continue; 
+			}
+
+			// locate all paths in output
+			if(!preg_match_all($re, $out, $matches)) continue;
+			
+			foreach($matches[0] as $key => $fullMatch) {
+				$attr = $matches[1][$key];
+				$quote1 = $matches[2][$key];
+				$url = $matches[3][$key];
+				$extra = $matches[4][$key];
+				$url = str_replace($path, '/', $url); 
+				
+				if(strtolower($attr == 'srcset') && strlen($extra) > 1 && strpos($extra, '/') !== false) {
+					// srcset attribute with more references
+					$extra = str_replace(dirname($matches[3][$key]) . '/', $host . ltrim(dirname($url), '/') . '/', $extra);
+				}
+				
+				$replacements[$fullMatch] = $attr . $quote1 . $host . ltrim($url, '/') . $extra;
+			}
+		}
+		
+		if($timer) {
+			if($type == 'html') {
+				$this->debugInfo[] = 
+					"     ProCache CDN: " . count($replacements) . " URLs updated" . "\n" . 
+					"PopulateCDN timer: " . Debug::timer($timer) . "s"; 
+			} else if($type == 'css') {
+				$out .= '/* ProCache CDN ' . count($replacements) . ' URLs (debug mode) ' . Debug::timer($timer) . 's */';
+			}
+		}
+		
+		if(count($replacements)) {
+			$out = str_replace(array_keys($replacements), array_values($replacements), $out);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Populate CDN referenced assets
+	 * 
+	 * @param Page $page
+	 * @param string $out
+	 * @return bool
+	 * 
+	 */
+	public function renderCDN(Page $page, &$out) {
+		
+		if($this->cdnStatus == self::CDN_STATUS_OFF) {
+			return false;
+		} else if($this->cdnStatus == self::CDN_STATUS_GUEST) {
+			if($this->wire('user')->isLoggedin()) return false;
+		} else if($this->cdnStatus == self::CDN_STATUS_USERS) {
+			if(!$this->wire('user')->isLoggedin()) return false;
+		} else {
+			// CDN_STATUS_ALL always active
+		}
+		
+		if(count($this->cdnTemplates) && !in_array($page->template->id, $this->cdnTemplates)) return false;
+		
+		return $this->populateCDN($out);
+	}
+
+	/**
+	 * Merge and minify CSS and JS file references in output
+	 * 
+	 * @param page $page
+	 * @param string $out
+	 * @return bool
+	 * 
+	 */
+	public function renderMerge(Page $page, &$out) {
+		if($page) {}
+		$n = 0;
+		$debug = $this->debug || $this->wire('config')->debug;
+		$debugInfo = array();
+		$_timer = $debug ? Debug::timer('ProCacheMerge') : null;
+		
+		if(in_array('cssHead', $this->minifyOptions)) {
+			$timer = $debug ? Debug::timer('ProCacheMergeCSSHead') : null;
+			$merger = $this->getFileMerger();
+			$merger->setMaxImportSizeCSS($this->minifyMaxImportCSS); 
+			$out = $merger->mergeCSSFilesInMarkup($out, true);
+			if($timer) $debugInfo[] = '    Merge/min CSS: ' . Debug::timer($timer) . "s";
+			$n++;
+		}
+		
+		if(in_array('jsHead', $this->minifyOptions)) {
+			$timer = $debug ? Debug::timer('ProCacheMergeJSHead') : null;
+			$merger = $this->getFileMerger();
+			$out = $merger->mergeJSFilesInMarkup($out, true, true);
+			if($timer) $debugInfo[] = 'Merge/min JS head: ' . Debug::timer($timer) . "s";
+			$n++;
+		}
+		
+		if(in_array('jsBody', $this->minifyOptions)) {
+			$timer = $debug ? Debug::timer('ProCacheMergeJSBody') : null;
+			$merger = $this->getFileMerger();
+			$out = $merger->mergeJSFilesInMarkup($out, false, true);
+			if($timer) $debugInfo[] = 'Merge/min JS body: ' . Debug::timer($timer) . "s";
+			$n++;
+		}
+
+		if(count($debugInfo)) {
+			$debugInfo[] = '  Merge/min total: ' . Debug::timer($_timer) . "s";
+			$this->debugInfo[] = implode("\n", $debugInfo);
+		}
+		
+		return $n > 0;
+	}
+
+	/**
+	 * Minify HTML of output
+	 * 
+	 * @param Page $page
+	 * @param string $out
+	 * @param bool $allowCache Whether or not content will be cached by ProCache
+	 * @return bool
+	 * 
+	 */
+	public function renderMinify(Page $page, &$out, $allowCache) {
+		
+		if($page) {}
+		if(!$allowCache && in_array('htmlCache', $this->minifyOptions)) return false;
+		if($this->wire('user')->isLoggedin()) {
+			if(!in_array('htmlUsers', $this->minifyOptions)) return false;
+		} else {
+			if(!in_array('htmlGuest', $this->minifyOptions) && !in_array('htmlCache', $this->minifyOptions)) return false;
+		}
+		
+		$timer = $this->debug || $this->wire('config')->debug ? Debug::timer('ProCacheMinifyHTML') : null;
+		$originalSize = $timer ? strlen($out) : 0;
+
+		$merger = null;
+		if(in_array('js', $this->minifyHTMLOptions)) {
+			$merger = $this->getFileMerger();
+			$merger->minifyInlineJS($out);
+		}
+		if(in_array('css', $this->minifyHTMLOptions) && stripos($out, '<style') !== false) {
+			if(is_null($merger)) $merger = $this->getFileMerger();
+			$merger->minifyInlineCSS($out);
+		}
+		
+		require_once(dirname(__FILE__) . '/ProCacheMinifyHTML.php'); 
+		$minifier = new ProCacheMinifyHTML();
+		
+		$minifier->setOption('removeComments', in_array('uncomment', $this->minifyHTMLOptions));
+		$minifier->setOption('convertXHTML', in_array('noXHTML', $this->minifyHTMLOptions));
+		$minifier->setOption('unquoteAttr', in_array('unquote', $this->minifyHTMLOptions));
+		$minifier->setOption('removeBlankAttr', in_array('unblank', $this->minifyHTMLOptions));
+		$minifier->setOption('removeUnnecessaryAttr', in_array('unattr', $this->minifyHTMLOptions));
+		$minifier->setOption('removeUnnecessaryTags', in_array('untag', $this->minifyHTMLOptions));
+		$minifier->setOption('collapseBooleanAttr', in_array('unbool', $this->minifyHTMLOptions));
+		
+		$minifier->setBlocks($this->minifyBlocks);
+		$minifier->setIgnoreTags($this->minifyIgnoreTags);
+		$minifier->setRemoveBlankAttrs($this->minifyRemoveBlankAttr);
+		
+		/* FOR EXAMPLE PURPOSES ONLY
+		$minifier->setJSMinifyFunction(function($js) {
+			$jsmin = new MatthiasMullie\Minify\JS();
+			$jsmin->add($js);
+			return $jsmin->minify();	
+		});
+		$minifier->setCSSMinifyFunction(function($css) {
+			$cssmin = new MatthiasMullie\Minify\CSS();
+			$cssmin->add($css);	
+			$cssmin->setMaxImportSize(0);
+			return $cssmin->minify();
+		});
+		*/
+		
+		$size1 = 0;
+		$size2 = 0;
+		$size3 = 0;
+
+		if($timer) $size1 = strlen($out);
+		$out = $minifier->minify($out);
+		if($timer) $size2 = strlen($out);
+		if(in_array('hrefs', $this->minifyHTMLOptions)) {
+			$minifier->convertURLs($out, $this->wire('config')->urls->root, $this->wire('input')->url());
+		}
+		if($timer) $size3 = strlen($out); 
+
+		if($timer) {
+			$timer = Debug::timer($timer);
+			$this->debugInfo[] = 
+				"      Minify HTML: " . $timer . 's' . "\n" . 
+				"    Original size: " . $originalSize . "\n" . 
+				"      Minify size: " . strlen($out) . "\n" . 
+				"     Minify saved: " . ($size1-$size2) . "\n" . 
+				"ConvertURLs saved: " . ($size2-$size3) . "\n" . 
+				"    Total savings: " . ($size1-$size3) . ' (' . round(100 - (100 * ($size3 / $originalSize)), 1) . '%) ';
+		}
+		
+		return true; 
+	}
+	
+	/**
+	 * Save a new static cache file
+	 *
+	 * @param Page $page
+	 * @param string $out
+	 * @return bool
+	 *
+	 */
+	public function renderCache(Page $page, &$out) {
+
+		// determine current cache file name based on page and page number
+		$pageNum = 1;
+		if($this->input->pageNum > 1 && $this->input->pageNum < self::MAX_PAGE_NUM && $page->template->allowPageNum) {
+			$pageNum = $this->input->pageNum;
+		}
+
+		// determine any extra URL segments
+		$urlSegments = array();
+		if($this->input->urlSegment1 && $page->template->urlSegments && $this->urlSegments) {
+			$n = 0;
+			foreach($this->input->urlSegments as $s) {
+				if(++$n > $this->urlSegments) break;
+				$urlSegments[] = $s;
+			}
+
+		} else if(count($this->input->urlSegments) > $this->urlSegments) {
+			// don't cache
+			return false;
+		}
+
+		// get the cache path and intended cache files
+		$path = $this->getCachePath($page, $pageNum, $urlSegments);
+		$ext = $this->getContentTypeExt($page);
+
+		$index = $this->cacheIndexBasename('', null, $ext);
+		$file = $path . $index;
+		$tmp = $file . ".tmp";
+
+		// if tmp file is already being written & less than 1 min old, abort writing cache
+		if(is_file($tmp) && filemtime($tmp) > (time() - 60)) return false;
+
+		// we first write to a tmp file to ensure the cache file can't be read until it has been fully written
+		if($this->bodyClass) {
+			$o = $out; 
+			$this->renderOutputTweaksCacheOnly($o);
+			$result = file_put_contents($tmp, $o, LOCK_EX);
+			unset($o);
+		} else {
+			$result = file_put_contents($tmp, $out, LOCK_EX);
+		}
+
+		if($result === false) {
+			$this->error("Error saving tmp ProCache file: $tmp");
+			return false;
+		}
+
+		// place the new cache file
+		if(is_file($file)) unlink($file);
+		rename($tmp, $file);
+		if($this->config->chmodFile) chmod($file, octdec($this->config->chmodFile));
+
+		// keep a record of this cache file in the DB
+		$pagePath = substr($path, strlen($this->getCachePath())-1);
+		$created = date('Y-m-d H:i:s');
+		$table = self::DB_TABLE;
+		
+		if($this->wire('config')->pageNameCharset === 'UTF8') {
+			$pagePath = $this->wire('sanitizer')->pagePathName($pagePath, 4); // 4=toAscii
+		}
+
+		$sql =
+			"INSERT INTO $table (pages_id, templates_id, path, created) " .
+			"VALUES(:pages_id, :templates_id, :pagePath, :created) " .
+			"ON DUPLICATE KEY UPDATE pages_id=VALUES(pages_id), " .
+			"templates_id=VALUES(templates_id), path=VALUES(path), created=VALUES(created) ";
+
+		$query = $this->wire('database')->prepare($sql);
+		$query->bindValue(':pages_id', (int) $page->id, PDO::PARAM_INT);
+		$query->bindValue(':templates_id', (int) $page->template->id, PDO::PARAM_INT);
+		$query->bindValue(':pagePath', $pagePath, PDO::PARAM_STR);
+		$query->bindValue(':created', $created);
+		
+		return $query->execute();
+	}
+
+	
+	/**
+	 * Hook called after a page is rendered
+	 * 
+	 * This is where we apply whatever cache, minify, merge and CDN options were selected
+	 *
+	 * @param HookEvent $event
+	 *
+	 */
+	public function hookPageRender(HookEvent $event) {
+		
+		if(!$this->isValidLicense()) return;
+		/** @var Page $page */
+		$page = $event->object;
+		if($this->timer) $this->set('pageRenderTime', Debug::timer($this->timer));
+		$allowCache = $this->allowCacheForPage($page);
+		
+		// don't proceed if in any kind of admin page
+		if($page->template == 'admin' ||strpos($page->url, $this->wire('config')->urls->admin) === 0) return;
+		if($page->id != $this->renderPageID && $page->id != $this->wire('config')->http404PageID) return;
+		
+		$contentType = $page->template->contentType;
+		$isHTML = !$contentType || $contentType == 'html';
+		if($isHTML) $isHTML = stripos($event->return, '</html>') !== false;
+		$out = $event->return;
+	
+		if($isHTML) {
+			// minify, merge and CDN options only apply to HTML documents
+			$allowMinify = true;
+			if(in_array('useTemplates', $this->minifyOptions)) {
+				$allowMinify = in_array($page->template->id, $this->minifyTemplates);
+			}
+			// option to disable minify via a "NoMinify" get var, for users that are allowed (for debugging)
+			if($allowMinify && !empty($_GET['NoMinify']) && $this->wire('user')->isLoggedin() && $page->editable()) $allowMinify = false;
+			$allowMerge = $allowMinify;
+			$n = 0;
+			if($this->renderOutputTweaksEarly($page, $out)) $n++;
+			if($allowMerge) if($this->renderMerge($page, $out)) $n++;
+			if($this->renderCDN($page, $out)) $n++;
+			if($allowMinify) if($this->renderMinify($page, $out, $allowCache)) $n++;
+			if($this->renderOutputTweaks($page, $out)) $n++;
+			if($n) $event->return = $out; 
+		}
+	
+		if($allowCache) $this->renderCache($page, $out);
+	}
+
+	/**
+	 * Hookable method to allow custom rules to determine if page should be cached. 
+	 * 
+	 * @param Page $page
+	 * @return bool
+	 *
+	 */
+	protected function ___allowCacheForPage(Page $page) {
+		
+		$cache = true;
+
+		if($this->wire('user')->isLoggedin()) {
+			// if user is logged in, abort
+			$cache = false;
+		} else if(count($_GET) || count($_POST)) {
+			// if any GET or POST vars are present, then abort
+			$cache = false;
+		} else if($this->noCacheCookies) {
+			// check if any disallowed cookies are present
+			$hasCookie = false;
+			foreach(explode("\n", $this->noCacheCookies) as $name) {
+				if(isset($_COOKIE[trim($name)])) $hasCookie = true;
+			}
+			if($hasCookie) $cache = false;
+		}
+		
+		if($cache) {
+			if($page->id != $this->renderPageID) {
+				// if page is something other than the one we started with, don't attempt to operate on it
+				$cache = false;
+			} else if(!in_array($page->template->id, $this->cacheTemplates)) {
+				// if page's template is not in the list, then abort
+				$cache = false;
+			}
+
+			// duplicate the option from PageRender
+			if($cache) {
+				$pageID = (int) $this->session->get('PageRenderNoCachePage');
+				if($pageID && $pageID === $page->id) $cache = false;
+			}
+		}
+		
+		return $cache;
+	}
+
+	/**
+	 * Render output tweaks before other operations that might manipulate markup
+	 * 
+	 * @param Page $page
+	 * @param $html
+	 * @return int Number of tweaks applied
+	 * 
+	 */
+	protected function renderOutputTweaksEarly(Page $page, &$html) {
+		if($page) {}
+		$numTweaksApplied = 0;
+		$useCanonical = $this->canonical && $this->canonical != "0" && stripos($html, '<head') !== false;
+		if($useCanonical) {
+			// make sure there isn't already a canonical tag present
+			if(stripos($html, 'canonical') !== false) {
+				// if the word 'canonical' appeared somewhere, check that it's not a link canonical tag
+				if(preg_match('/\srel\s*=\s*["\']?canonical/i', $html)) $useCanonical = false;
+			}
+			if($useCanonical) {
+				switch($this->canonical) {
+					case "1": $scheme = $this->wire('config')->https ? 'https://' : 'http://'; break;
+					case "http": $scheme = "http://"; break;
+					case "https": $scheme = "https://"; break;
+					default: $scheme = "";
+				}
+				if($scheme) {
+					$url = $this->wire('input')->httpUrl();
+					$url = str_replace(array('http://', 'https://'), $scheme, $url);
+					$tag = "<link rel=\"canonical\" href=\"$url\" />";
+					if(strpos($html, '<head>') !== false) {
+						$html = str_ireplace("<head>", "<head>\n\t$tag", $html);
+					} else {
+						$html = preg_replace('/(<head\s+[^>]*>)/i', '$1' . "\n\t$tag", $html);
+					}
+					$numTweaksApplied++;
+				}
+			}
+		}
+		return $numTweaksApplied;
+	}
+
+	/**
+	 * Insert a ProCache class to the <body> tag, when present, as well as append debug info
+	 * 
+	 * @param Page $page
+	 * @param string $html
+	 * @return int Number of tweaks applied
+	 *
+	 */
+	protected function renderOutputTweaks(Page $page, &$html) {
+
+		if($page) {}
+		$numTweaksApplied = 0;
+		$info = self::getModuleInfo();
+		$version = $info['version'];
+		if($this->debug || $this->wire('config')->debug) {
+			$timerStr = 
+				"         ProCache: v$version\n" .
+				"      Render date: " . date('Y-m-d H:i:s') . "\n" .
+				" Page render time: " . $this->get('pageRenderTime') . "s\n" . 
+				" Total w/ProCache: " . Debug::timer($this->timer) . "s"; 
+		} else {
+			$timerStr = '';	
+		}
+		
+		if($this->debug) {
+			$debugStr = "<p id='ProCacheDebug'>$timerStr</p>";
+			if(stripos($html, '</body>')) {
+				$html = str_ireplace("</body>", "$debugStr</body>", $html);
+			} else {
+				// no closing body tag
+				$html .= $debugStr; 
+			}
+			$numTweaksApplied++;
+		}
+
+		if($this->debug || $this->wire('config')->debug) {
+			array_unshift($this->debugInfo, $timerStr);
+			$hr = "=======================================";
+			$debugInfo = "\nProcessWire Debug Mode: ProCache Info\n$hr\n" . implode("\n$hr\n", $this->debugInfo);
+			$debugStr = "<!--\n$debugInfo\n$hr\n-->";
+			if(stripos($html, '</html>')) {
+				$html = str_ireplace("</html>", "</html>$debugStr", $html);
+			} else {
+				$html .= $debugStr;
+			}
+			$numTweaksApplied++;
+		}
+		
+		return $numTweaksApplied;
+	}
+
+	/**
+	 * Output tweaks that apply only to the cached file (i.e. not visible except when cache in use)
+	 * 
+	 * @param $html
+	 * @return int Number of tweaks applied
+	 * 
+	 */
+	protected function renderOutputTweaksCacheOnly(&$html) {
+		$numTweaksApplied = 0;
+		$bodyClass = $this->sanitizer->name($this->bodyClass);
+		
+		if($bodyClass) {
+			foreach(array('body', 'html') as $tag) {
+				
+				$hasTag1 = strpos($html, "<$tag>") !== false; 
+				$hasTag2 = $hasTag1 === false ? strpos($html, "<$tag ") !== false : false;
+
+				if($hasTag1) {
+					// has tag with no attributes present
+					$html = str_replace("<$tag>", "<$tag class=$bodyClass>", $html);
+					$numTweaksApplied++;
+					break;
+
+				} else if($hasTag2 && preg_match('/<' . $tag . '\s[^>]*>/', $html, $matches)) {
+					// has tag and attributes are present
+					$body = $matches[0];
+					if(strpos($body, 'class=')) {
+						// class attr already present
+						if(strpos($body, 'class="') || strpos($body, "class='")) {
+							// quoted class attribute, add new body class to quoted value
+							$body = preg_replace('/( class=[\'"])/', '$1' . "$bodyClass ", $body);
+						} else {
+							// unquoted class attribute, merge existing class and add quotes
+							$body = preg_replace('/ class=([^\s>]+)/', ' class="$1 ' . $bodyClass . '"', $body);
+						}
+					} else {
+						// no class attr present, so add one
+						$body = rtrim($body, '>') . " class=$bodyClass>";
+					}
+					$html = str_replace($matches[0], $body, $html);
+					$numTweaksApplied++;
+					break;
+				}
+			}
+		}
+		
+		return $numTweaksApplied;
+	}
+
+	/**
+	 * Get the content-type extension for the given Page or Template
+	 * 
+	 * @param Template|Page $item
+	 * @return string
+	 * 
+	 */
+	public function getContentTypeExt($item) {
+		
+		$contentTypes = $this->wire('config')->contentTypes; 
+		if(!is_array($contentTypes)) return 'html'; // core versions before 2.5.25
+	
+		if($item instanceof Template) $contentType = $item->contentType;
+			else if($item instanceof Page) $contentType = $item->template->contentType;
+			else $contentType = 'html';
+		
+		if(strpos($contentType, '/') !== false) {
+			list($ignore, $contentType) = explode('/', $contentType); 
+			if($ignore) {} // ignore
+		}
+		
+		return isset($contentTypes[$contentType]) ? $contentType : 'html';
+	}
+
+	/**
+	 * Clear the cache for multiple pages
+	 *
+	 * @param PageArray $items
+	 *
+	 */
+	public function clearPages(PageArray $items) {
+		foreach($items as $page) {
+			/** @var Page $page */
+			$this->clearPage($page);
+		}
+	}
+
+	/**
+	 * Clear the cache for a specific page, including pageNum and urlSegment versions
+	 *
+	 * @param Page $page
+	 * 
+	 */
+	public function clearPage(Page $page) {
+
+		$cachePath = $this->getCachePath();
+		$path = $cachePath . ltrim($page->path(), '/'); // intentional
+		$ext = $this->getContentTypeExt($page);
+
+		if(is_dir($path)) {
+			// clear cache for saved page, index file only
+			$hosts = $this->cacheHosts; 
+			if(!count($hosts)) $hosts = array('');
+			foreach($hosts as $host) {
+				foreach(array(false, true) as $https) {
+					$file = $path . $this->cacheIndexBasename($host, $https, $ext); 
+					if(is_file($file)) unlink($file); 
+				}
+			}
+		}
+
+		// locate pageNum and urlSegment variations
+		$table = self::DB_TABLE;
+		$charset = $this->wire('config')->pageNameCharset;
+		$path = $page->path();
+		if($charset === 'UTF8') $path = $this->wire('sanitizer')->pagePathName($path, 4); // 4=toAscii
+		$sql = 	"SELECT path FROM $table WHERE pages_id=:pages_id AND path!=:path"; 
+		$query = $this->wire('database')->prepare($sql); 
+		$query->bindValue(':pages_id', $page->id, PDO::PARAM_INT); 
+		$query->bindValue(':path', $path, PDO::PARAM_STR);
+		$query->execute();
+
+		while($row = $query->fetch(PDO::FETCH_NUM)) {
+
+			list($path) = $row; 
+			if($charset === 'UTF8') $path = $this->wire('sanitizer')->pagePathName($path, 8); // 8=toUTF8
+			$path = $cachePath . ltrim($path, '/'); 
+
+			// if not there, skip, as it's parent dir may have already been removed
+			if(!is_dir($path)) continue; 
+
+			// remove a numbered page or urlSegment path
+			$this->wireRmdir($path, true); 
+		}
+
+		$query->closeCursor();
+		
+		$sql = "DELETE FROM $table WHERE pages_id=:pages_id"; 
+		$query = $this->wire('database')->prepare($sql); 
+		$query->bindValue(':pages_id', $page->id, PDO::PARAM_INT); 
+		$query->execute();
+		
+		if($this->wire('config')->debug) $this->message($this->_('ProCache cleared page:') . ' '. $page->path, Notice::debug);
+	}
+
+	/**
+	 * Clear entire cache
+	 *
+ 	 */
+	public function clearAll() {
+		$cachePath = $this->getCachePath();
+		$this->wireRmdir($cachePath, true); 			
+		$this->wire('database')->exec("DELETE FROM " . self::DB_TABLE); 
+		return true; 
+	}
+
+	/**
+	 * Return the number of pages in the cache
+	 *
+	 */
+	public function numCachedPages() {
+		$query = $this->wire('database')->prepare("SELECT COUNT(*) FROM " . self::DB_TABLE); 
+		$query->execute();
+		list($cnt) = $query->fetch(PDO::FETCH_NUM); 
+		return $cnt; 	
+	}
+
+	/**
+	 * Return an info array about the given page's ProCache info or false if not cached
+	 *
+	 * Returned info array is array("path of cached page" => "date created"); 
+	 * An empty array just indicates the page is enabled for caching, but no cache file exists.
+	 *
+	 * @param Page $page
+	 * @return array|bool
+	 *
+	 */
+	public function pageInfo(Page $page) {
+		if(!in_array($page->template->id, $this->cacheTemplates)) return false;
+		$cachePath = $this->getCachePath();
+		$hosts = $this->cacheHosts; 
+		if(!count($hosts)) $hosts = array('');
+		$sql = "SELECT * FROM " . self::DB_TABLE . " WHERE pages_id=:pages_id"; 
+		$query = $this->wire('database')->prepare($sql); 
+		$query->bindValue(':pages_id', $page->id, PDO::PARAM_INT); 
+		$query->execute();
+		$info = array();
+		$ext = $this->getContentTypeExt($page);
+		$charset = $this->wire('config')->pageNameCharset;
+
+		while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+			if($charset === 'UTF8') $row['path'] = $this->wire('sanitizer')->pagePathName($row['path'], 8); // 8=toUTF8
+			foreach($hosts as $host) {
+				foreach(array(false, true) as $https) {
+					$index = $this->cacheIndexBasename($host, $https, $ext); 
+					$filename = $cachePath . $row['path'] . $index; 
+					if(is_file($filename)) { 
+						$path = $row['path'] . $index;
+						$info[$path] = $row['created'];	
+					}
+				}
+			}
+		}
+		$query->closeCursor();
+		ksort($info);
+		return $info;
+	}
+
+	/**
+	 * Return the index filename relative to the given host and https state
+	 *
+	 * If hostname and/or https aren't supplied, they will be determined automatically
+	 * 
+	 * @param string $hostname
+	 * @param bool $https
+	 * @param string $ext
+	 * @return string
+	 *
+	 */
+	public function cacheIndexBasename($hostname = '', $https = null, $ext = 'html') {
+		if(is_null($https)) $https = $this->https && $this->config->https ? true : false; 
+		$basename = $https ? 'https' : 'index';
+		if($this->cacheHosts && count($this->cacheHosts)) {
+			if(!$hostname) $hostname = $this->wire('config')->httpHost; 
+			$hostname = preg_replace('/[^-_a-z0-9]/', '_', strtolower($hostname)); 	
+			$basename = "$basename-$hostname";
+		}
+		$basename .= '.' . $ext;
+		return $basename; 
+	}
+
+	/**
+	 * Get the cache time for the given Template, or for all templates
+	 * 
+	 * @param null|string|int|Template $template Template id, name or object, or omit to return cache times for all templates
+	 * @return array|int 
+	 * 	- If given a $template, returns cache time or 0 if template is not cached.
+	 * 	- If not given a template, then returns an array of all cache times, indexed by template name. 
+	 * 
+	 */
+	public function getCacheTime($template = null) {
+		
+		$cacheTimes = array();
+		$cacheTime = 0;
+	
+		if(!is_null($template)) {
+			if(!is_object($template)) $template = $this->wire('templates')->get($template);
+			if(!$template instanceof Template) return 0;
+			if(!in_array($template->id, $this->cacheTemplates)) return 0;
+			// cache time defined with template settings, quick exit, return now
+			if($template->cache_time < 0) return abs($template->cache_time);
+		}
+			
+		if(strlen($this->cacheTimeCustom)) { 
+			if((is_null($template) || strpos($this->cacheTimeCustom, $template->name) !== false)) {
+				$lines = explode("\n", $this->cacheTimeCustom);
+				foreach($lines as $line) {
+					if(!strpos($line, '=')) continue;
+					list($templateName, $_cacheTime) = explode('=', $line);
+					$_cacheTime = (int) $_cacheTime;
+					if($_cacheTime < 1) continue;
+					if(is_null($template)) {
+						$t = $this->wire('templates')->get($templateName);
+						if($t && in_array($t->id, $this->cacheTemplates)) {
+							$cacheTimes[$templateName] = $_cacheTime;
+						}
+					} else if($templateName == $template->name) {
+						$cacheTime = (int) $cacheTime;
+						break;
+					}
+				}
+			}
+		}
+		
+		// return cache time for one template
+		if(!is_null($template)) {
+			if(!$cacheTime) $cacheTime = (int) $this->cacheTime;
+			return $cacheTime;
+		}
+	
+		// return cache time for all templates
+		foreach($this->cacheTemplates as $id) {
+			$t = $this->wire('templates')->get((int) $id);
+			if(!$t) continue;
+			if($t->cache_time < 0) {
+				$cacheTimes[$t->name] = abs($t->cache_time);
+			} else if(!isset($cacheTimes[$t->name])) {
+				$cacheTimes[$t->name] = $this->cacheTime; // default
+			}
+		}
+		
+		return $cacheTimes;
+	}
+
+	/**
+	 * Get the cache clearing behaviors for all templates or a given template
+	 * 
+	 * @param null|Template|string|int $template Optional template to retrieve behaviors for
+	 * @return array of ('template-name' => array(
+	 * 	// one or more of: 
+	 * 	CACHE_CLEAR_[BEHAVIOR] => CACHE_CLEAR[BEHAVIOR], 
+	 *  CACHE_CLEAR_PAGES => array(123,456,789), 
+	 * 	CACHE_CLEAR_SELECTOR => "selector string", 
+	 * );
+	 * If provide a template, then just the single dimensional array is returned (no array with template-name)
+	 * 
+	 */	
+	
+	public function getCacheClearBehaviors($template = null) {
+		
+		if(!is_null($template)) {
+			if(!is_object($template)) $template = $this->wire('templates')->get($template);
+			if(!$template) return array();
+		}
+		
+		$cacheClears = array();
+		
+		if(strlen($this->cacheClearCustom) && (is_null($template) || strpos($this->cacheClearCustom, $template->name) !== false)) {
+			// possible override with custom rules
+			foreach(explode("\n", $this->cacheClearCustom) as $line) {
+				// find current template in rules, if it's there
+				if(!is_null($template) && strpos($line, $template->name) !== 0) continue;
+				if(!strpos($line, '=')) continue;
+				list($name, $numbers) = explode('=', $line);
+				// found template, override $rules with one specific to this template
+				$behaviors = explode(',', $numbers);
+				$cacheClears[$name] = array(self::CACHE_CLEAR_SELF => self::CACHE_CLEAR_SELF);
+				foreach($behaviors as $behavior) {
+					$cacheClears[$name][(int) $behavior] = (int) $behavior;
+				}
+			}
+		}
+		
+		$cacheTemplates = is_null($template) ? $this->cacheTemplates : array($template);
+		
+		foreach($cacheTemplates as $id) {
+			
+			$t = is_object($id) ? $id : $this->wire('templates')->get((int) $id);
+			if(!$t) continue;
+			if(!in_array($t->id, $this->cacheTemplates)) continue;
+		
+			if($t->cache_time < 0) {
+				// defined with template
+				$cacheClears[$t->name] = array(self::CACHE_CLEAR_SELF => self::CACHE_CLEAR_SELF);
+				if($t->cacheExpire == Template::cacheExpireSite) {
+					$cacheClears[$t->name][self::CACHE_CLEAR_SITE] = self::CACHE_CLEAR_SITE;
+
+				} else if($t->cacheExpire == Template::cacheExpireParents) {
+					$cacheClears[$t->name][self::CACHE_CLEAR_PARENTS] = self::CACHE_CLEAR_PARENTS;
+					$cacheClears[$t->name][self::CACHE_CLEAR_HOME] = self::CACHE_CLEAR_HOME;
+				} else if($t->cacheExpire == Template::cacheExpireSpecific) {
+					$cacheClears[$t->name][self::CACHE_CLEAR_PAGES] = $t->cacheExpirePages;
+
+				} else if($t->cacheExpire == Template::cacheExpireSelector) {
+					$cacheClears[$t->name][self::CACHE_CLEAR_SELECTOR] = $t->cacheExpireSelector;
+				}
+				
+			} else if(!isset($cacheClears[$t->name])) {
+				// defined in ProCache, and no custom setting override
+				$cacheClears[$t->name] = array(self::CACHE_CLEAR_SELF => self::CACHE_CLEAR_SELF);
+				foreach($this->cacheClear as $behavior) {
+					$cacheClears[$t->name][$behavior] = $behavior;
+				}
+			}
+		}
+	
+		// return fall
+		if(is_null($template)) return $cacheClears;
+		
+		if(isset($cacheClears[$template->name])) {
+			// return for one template
+			return $cacheClears[$template->name];
+		} else {
+			// fallback for one template
+			$cacheClears[$template->name][self::CACHE_CLEAR_SELF] = self::CACHE_CLEAR_SELF;
+		}
+		return $cacheClears;
+	}
+	
+	/**
+	 * Hook into ProcessPageEdit::buildFormSettings to add note about ProCache
+	 * 
+	 * @param HookEvent $event
+	 *
+	 */
+	public function hookPageEdit(HookEvent $event) {
+		/** @var WirePageEditor $process */
+		$process = $event->object; 
+		$page = $process->getPage();
+		$form = $event->return;
+		$info = self::getModuleInfo();
+		/** @var InputfieldMarkup $f */
+		$f = $this->modules->get('InputfieldMarkup');
+		$f->attr('id+name', 'ProCacheInfo');
+		$f->label = $info['title']; 
+		$info = $this->pageInfo($page);
+
+		if($info === false) {
+			$f->attr('value', $this->_('This page is not cached by ProCache.'));
+			$f->collapsed = Inputfield::collapsedYes; 
+		} else if(!count($info)) {
+			$f->attr('value', $this->_('This page is set to be cached, but no cache files currently exist.')); 
+		} else {
+			$f->description = $this->_('The following files are currently cached for this page.'); 
+			/** @var MarkupAdminDataTable $table */
+			$table = $this->modules->get('MarkupAdminDataTable');
+			$table->headerRow(array($this->_('Cached URL'), $this->_('Date/Time Cached'))); 
+			foreach($info as $url => $created) {
+				$table->row(array($url, $created)); 
+			}
+			$f->attr('value', $table->render()); 
+		}
+		$form->add($f); 
+	}
+
+	/**
+	 * Hook into ProcessTemplate::buildForm
+	 *
+	 * @todo: finish this
+	 * @param HookEvent $event
+	 *
+	 */
+	public function hookTemplateEdit(HookEvent $event) {
+		$form = $event->return;	
+		// $template = $event->arguments[0];
+		$field = $form->get("cache_time"); 
+		if(!$field) return;
+	
+		/** @var InputfieldMarkup $f */
+		$f = $this->modules->get('InputfieldMarkup');	
+		$f->attr('id+name', 'ProCacheInfo');
+		$info = self::getModuleInfo();
+		$f->label = $info['title'];
+	
+		// to be added	
+	}
+
+	/**
+	 * Get an instance of the ProCache file merger
+	 * 
+	 * @return ProCacheFileMerger
+	 * 
+	 */
+	public function getFileMerger() {
+		require_once(dirname(__FILE__) . '/ProCacheFileMerger.php');
+		$merger = new ProCacheFileMerger();
+		$merger->setExpiration($this->cacheTime > 86400 ? $this->cacheTime : 86400);
+		$merger->setMaxImportSizeCSS($this->minifyMaxImportCSS); 
+		return $merger;	
+	}
+
+	/**
+	 * Merge the given array or csv string of files
+	 *
+	 * @param array|string $files
+	 * @param bool $minify (default=true)
+	 * @return string With merged file URL
+	 *
+	 */
+	public function merge($files, $minify = true) {
+		return $this->getFileMerger()->merge($files, $minify)->url();
+	}
+
+	/**
+	 * Merge and minify the given array or CSV string of CSS, SCSS or LESS files
+	 * 
+	 * SCSS and LESS files will be automatically compiled. 
+	 *
+	 * @param array|string $files
+	 * @param bool $minify (default=true)
+	 * @return string With merged file URL
+	 *
+	 */
+	public function css($files, $minify = true) {
+		return $this->getFileMerger()->setExtension('css')->merge($files, $minify)->url();
+	}
+
+	/**
+	 * Merge and minify the given array or CSV string of JS files
+	 *
+	 * @param array|string $files
+	 * @param bool $minify (default=true)
+	 * @return string With merged file URL
+	 *
+	 */
+	public function js($files, $minify = true) {
+		return $this->getFileMerger()->setExtension('js')->merge($files, $minify)->url();
+	}
+
+	/**
+	 * Generate an HTML stylesheet <link> tag with the given files
+	 *
+	 * @param array|string $files Can be array of CSV string of filenames
+	 * @param bool $minify (default=true)
+	 * @param string $media Optional media attribute
+	 * @return string With merged file URL
+	 *
+	 */
+	public function link($files, $minify = true, $media = '') {
+		$out = "<link rel='stylesheet' ";
+		if($media) $out .= "media='$media' ";
+		$out .= "href='" . $this->css($files, $minify) . "' />";	
+		return $out; 
+	}
+
+	/**
+	 * Generate an HTML javascript <script> tag with the given files merged
+	 *
+	 * @param array|string $files
+	 * @param bool $minify (default=true)
+	 * @return string With merged file URL
+	 *
+	 */
+	public function script($files, $minify = true) {
+		return "<script src='" . $this->js($files, $minify) . "'></script>";
+	}
+
+	/**
+	 * Get new instance of SCSS compiler
+	 * 
+	 * @return \Leafo\ScssPhp\Compiler
+	 * @see http://leafo.net/scssphp/docs/
+	 * 
+	 */
+	public function getSCSS() {
+		return $this->getFileMerger()->getSCSS(false); 
+	}
+	
+	/**
+	 * Get new instance of LESS compiler
+	 *
+	 * @return \lessc
+	 * @see http://leafo.net/lessphp/docs/
+	 *
+	 */
+	public function getLESS() {
+		return $this->getFileMerger()->getLESS(false);
+	}
+
+	/**
+	 * Module configuration (static)
+	 *
+	 * @param array $data
+	 * @return InputfieldWrapper
+	 * 
+	 */
+	public static function getModuleConfigInputfields(array $data) {
+		if($data) {}
+
+		// check that they have the required PW version
+		if(version_compare(wire('config')->version, self::MIN_PW_VERSION, '<')) {
+			wire()->error("ProCache requires ProcessWire " . self::MIN_PW_VERSION . " or newer. Please update.");
+		}
+
+		$form = new InputfieldWrapper();
+		if(!wire('config')->demo) {
+			$process = wire('modules')->get('ProcessProCache');
+			$process->getLicenseConfig($form); 
+		}
+		
+		return $form; 	
+	}
+
+	/**
+	 * Install
+	 *
+	 */
+	public function ___install() {
+
+		$sql =	
+			"CREATE TABLE " . self::DB_TABLE . " (" . 
+			"path varchar(500) CHARACTER SET ascii NOT NULL, " . 
+			"pages_id int(10) unsigned NOT NULL, " . 
+			"templates_id int(10) unsigned NOT NULL, " . 
+			"created datetime NOT NULL, " . 
+			"PRIMARY KEY (path), " . 
+			"INDEX created (created, templates_id), " . 
+			"INDEX pages_id (pages_id) " . 
+			")";
+
+		$this->wire('database')->exec($sql);
+		$this->modules->get('ProcessProCache'); 
+	}
+
+	/**
+	 * Uninstall
+	 *
+	 */
+	public function ___uninstall() {
+		try {
+			$this->modules->uninstall('ProcessProCache'); 
+			$this->clearAll();
+			$this->wire('database')->exec("DROP TABLE " . self::DB_TABLE); 
+		} catch(Exception $e) {
+			$this->error($e->getMessage());
+		}
+	}
+
+}
+
+

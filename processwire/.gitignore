@@ -18,7 +18,6 @@ site-default/assets/files
 site-default/assets/sessions
 site-default/assets/cache
 site-default/assets/installed.php
-site
 site-skyscrapers
 .htaccess
 tmp
@@ -36,3 +35,10 @@ wire/modules/Inputfield/InputfieldDatetime/jquery-ui-timepicker-addon.min.js
 wire/modules/Jquery/JqueryFancybox/
 wire/modules/Jquery/JqueryTableSorter/JqueryTableSorter.min.js
 pwx.php
+.phpintel 
+
+site/config.php
+site/assets/cache/*
+site/assets/files/*
+site/assets/ProCache*
+site/assets/sessions/*

@@ -1,0 +1,20 @@
+.content code {
+	border: 1px dotted #ddd;
+	font-size: 13px;
+}
+
+.content label code {
+	background-color: #ffffee;
+	color: #555;
+}
+
+.content .notes code {
+}
+
+input.lifespan {
+	width: 100px; 
+}
+
+.InputfieldContent pre {
+	color: #333;
+}

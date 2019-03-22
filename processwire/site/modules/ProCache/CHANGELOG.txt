@@ -1,0 +1,87 @@
+Version 3.1.7 - September 20, 2017
+==================================
+- Added support for compiling of SCSS files as part of CSS merge/minify.
+- Added support for compiling of LESS files as part of CSS merge/minify.
+- Updated .htaccess support for AWS load balancer.
+- Various other small bug fixes and optimizations.
+
+Version 3.1.6 - April, 2017
+===========================
+- Improvements to .htaccess update detection and PW3-specific tweaks.
+- Some tweaks and fixes in CSS/JS/HTML Minify operations.
+- Other minor bug fixes and updates. 
+
+Version 3.1.5 - May 30, 2016
+==============================
+- A few minor improvements and fixes to the HTML Minifier
+
+Version 3.1.4 - March 25, 2016
+==============================
+- Add support for extended page names in ProcessWire 3.x
+- Minor bugfixes
+
+Version 3.1.2 & 3.1.3 - October 11, 2015
+========================================
+- Minor bugfixes to minify HTML
+- Correction to Page::render hook priority level for more 3rd party support
+- Minor adjustments to configuration screen .htaccess copy/paste output
+
+Version 3.1.1 - July 22, 2015
+=============================
+- More improvements to HTML minification engine. 
+- Correct issue with minifying tag attribute strings that 
+  span multiple lines. 
+- Correct non-local/non-file data attribute issue with CSS.  
+
+Version 3.1.0 beta - July 17, 2015
+==================================
+- Major improvements to HTML minification engine
+- Several new configuration options for HTML minify
+- New ability to specify ProCache configuration directly
+  from ProcessWire's template editor (requires PW 2.6.9+).
+- Added ability to clear cache by specific pages, or 
+  clear by pages matching a selector (requires PW 2.6.9+).
+- Added support for injection of <link canonical> tag in
+  to HTML output (when not already present). 
+- Improvements to "Origin" tab in configuration screen, 
+  so that you can now see all cache expire times and 
+  behaviors at a glance in the table. 
+- Added details about merged/minified CSS/JS files to 
+  the cache status tab. 
+
+Version 3.0 beta - May 15, 2015
+===============================
+- Add support for CDN integration
+- Add support for HTML minification
+- Add support for CSS and JS minification
+- Add .htaccess tweaks section
+
+Version 2.0.2 beta - April 10, 2015
+===================================
+- Add support for caching and delivering alternate content 
+  types (XML, JSON, etc.)
+
+Version 2.0.1 - October 1, 2014
+================================
+- Add multi-host support.
+- Add support for caching HTTPS request separately. 
+- Convert queries from MySQLi to PDO (requires PW 2.4+)
+
+Version 1.0.2 - February 6, 2013
+================================
+- Fix bug where a URL segmented page could get cached when 
+  URL segments were allowed for a template but not for 
+  ProCache. The result could be a storage of the wrong 
+  output in the cache.
+
+Version 1.0.1 - February 5, 2013
+================================
+- Enable system templates to use ProCache in select instances.
+  This was added primarily to support FormBuilder. 
+- Minor bugfix to prevent error message when in debug mode
+  and attempting to clear a non-existant maintenance file.
+
+Version 1.0.0 - January 29, 2013
+================================
+- First release.
+
