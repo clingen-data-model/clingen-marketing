@@ -39,6 +39,9 @@ pwx.php
 
 site/config.php
 site/assets/cache/*
+!site/assets/cache/.gitkeep
 site/assets/files/*
+!site/assets/files/.gitkeep
 site/assets/ProCache*
 site/assets/sessions/*
+!site/assets/sessions/.gitkeep
