@@ -2,6 +2,9 @@
 - name: Update apt cache
   apt:
     update_cache: yes
+- name: Install python apt
+  apt:
+    name: python-apt
 - name: Install httpd
   apt:
     name: apache2
@@ -17,6 +20,24 @@
 - name: Install php-pdo-mysql
   apt:
     name: php-pdo-mysql
+# - name: enable rewrites for httpd
+#   file:
+#     src: /etc/apache2/mods-available/rewrite.load
+#     dest: /etc/apache2/mods-enabled/rewrite.load
+#     state: link
+- name: enable mod_rewrite
+  apache2_module:
+    state: present
+    name: rewrite
+- name: enable mod_ssl
+  apache2_module:
+    state: present
+    name: ssl
+- name: enable default site for SSL
+  file:
+    src: /etc/apache2/sites-available/default-ssl.conf
+    dest: /etc/apache2/sites-enabled/default-ssl.conf
+    state: link
 - name: Create database for processwire
   mysql_db:
     name: pw
@@ -27,10 +48,11 @@
     password: pw
     priv: 'pw.*:ALL'
     login_unix_socket: /var/run/mysqld/mysqld.sock
-# - name: Ensure default index.html is removed
-#   file:
-#     state: absent
-#     path: '/var/www/html/index.html'
+- name: Ensure html dir owned by www
+  file:
+    path: /var/www/html
+    owner: www-data
+    group: www-data
 - name: Copy local site to destination
   synchronize:
     src: '../processwire/'
@@ -40,6 +62,21 @@
     recursive: yes
     rsync_opts:
       - "--exclude=sess*"
+      - "--exclude=processwire/site/assets/files/**"
+- name: Copy htaccess
+  copy:
+    src: htaccess.txt
+    dest: /var/www/html/.htaccess
+- name: Copy config
+  template:
+    src: config-sample.php.j2
+    dest: /var/www/html/site/config.php
+- name: Ensure html dir owned by www
+  file:
+    path: /var/www/html
+    owner: www-data
+    group: www-data
+    recurse: yes
 - name: Bounce httpd
   systemd:
     state: restarted

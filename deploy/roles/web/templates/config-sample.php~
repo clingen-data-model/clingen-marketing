@@ -1,0 +1,154 @@
+<?php namespace ProcessWire;
+
+/**
+ * ProcessWire Configuration File
+ *
+ * Site-specific configuration for ProcessWire
+ *
+ * Please see the file /wire/config.php which contains all configuration options you may
+ * specify here. Simply copy any of the configuration options from that file and paste
+ * them into this file in order to modify them.
+ * 
+ * SECURITY NOTICE
+ * In non-dedicated environments, you should lock down the permissions of this file so
+ * that it cannot be seen by other users on the system. For more information, please
+ * see the config.php section at: https://processwire.com/docs/security/file-permissions/
+ * 
+ * This file is licensed under the MIT license
+ * https://processwire.com/about/license/mit/
+ *
+ * ProcessWire 3.x, Copyright 2016 by Ryan Cramer
+ * https://processwire.com
+ *
+ */
+
+if(!defined("PROCESSWIRE")) die();
+
+/*** SITE CONFIG *************************************************************************/
+
+/** @var Config $config */
+
+/**
+ * Enable debug mode?
+ *
+ * Debug mode causes additional info to appear for use during dev and debugging.
+ * This is almost always recommended for sites in development. However, you should
+ * always have this disabled for live/production sites.
+ *
+ * @var bool
+ *
+ */
+$config->debug = false;
+
+
+/*** INSTALLER CONFIG ********************************************************************/
+
+
+/**
+ * Installer: Database Configuration
+ * 
+ */
+$config->dbHost = '';
+$config->dbName = '';
+$config->dbUser = '';
+$config->dbPass = '';
+$config->dbPort = '';
+
+/**
+ * Installer: User Authentication Salt 
+ * 
+ * Must be retained if you migrate your site from one server to another
+ * 
+ */
+$config->userAuthSalt = ''; 
+
+/**
+ * Installer: File Permission Configuration
+ * 
+ */
+$config->chmodDir = '0755'; // permission for directories created by ProcessWire
+$config->chmodFile = '0644'; // permission for files created by ProcessWire 
+
+/**
+ * Installer: Time zone setting
+ * 
+ */
+$config->timezone = 'UTC';
+
+/**
+ * Installer: Admin theme
+ * 
+ */
+$config->defaultAdminTheme = 'AdminThemeUikit';
+
+/**
+ * Installer: Unix timestamp of date/time installed
+ * 
+ * This is used to detect which when certain behaviors must be backwards compatible.
+ * Please leave this value as-is.
+ * 
+ */
+$config->installed = 1539104630;
+
+
+/**
+ * Installer: HTTP Hosts Whitelist
+ * 
+ */
+$config->httpHosts = array('');
+
+
+/**
+ * Enable ProcessWire advanced development mode?
+ * 
+ * Turns on additional options in ProcessWire Admin that aren't applicable in all instances.
+ * Be careful with this as some options configured in advanced mode cannot be removed once
+ * set (at least not without going directly into the database). 
+ * 
+ * #notes Recommended mode is false, except occasionally during ProcessWire core or module development.
+ * @var bool
+ *
+ */
+$config->advanced = false;
+setlocale(LC_ALL,'en_US.UTF-8');
+
+/**
+ * Use session fingerprint?
+ * 
+ * Should login sessions be tied to IP and user agent?
+ * IP fingerprinting may be problematic on dynamic IPs. 
+ * Below are the possible values: 
+ * 
+ * 	0 or false: Fingerprint off
+ * 	1 or true: Fingerprint on with default/recommended setting (currently 10). 
+ * 	2: Fingerprint only the remote IP
+ * 	4: Fingerprint only the forwarded/client IP (can be spoofed)
+ * 	8: Fingerprint only the useragent
+ * 	10: Fingerprint the remote IP and useragent (default)
+ * 	12: Fingerprint the forwarded/client IP and useragent
+ * 	14: Fingerprint the remote IP, forwarded/client IP and useragent (all). 
+ * 
+ * If using fingerprint in an environment where the user's 
+ * IP address may change during the session, you should
+ * fingerprint only the useragent, or disable fingerprinting.
+ *
+ * If using fingerprint with an AWS load balancer, you should 
+ * use one of the options that uses the "client IP" rather than 
+ * the "remote IP", fingerprint only the useragent, or disable 
+ * fingerprinting.
+ * 
+ * @var int
+ *
+ */
+$config->sessionFingerprint = 8;
+
+// Allow for template engine
+$config->useMarkupRegions = true;
+$config->appendTemplateFile = 'App/Views/Layouts/_main.php';
+
+// Some basic image defaults
+$config->imgSquareStandard = "/site/templates/resources/img/defaults/clingen_logo_square_standard.png";
+$config->imgUserSquareStandard = "/site/templates/resources/img/defaults/user_square.png";
+
+
+
