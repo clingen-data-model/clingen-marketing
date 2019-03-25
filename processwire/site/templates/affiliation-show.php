@@ -52,7 +52,7 @@ if($page->expert_panel_type."" == 1) {
     $ep_step_1 = "progress-bar-complete";
     $ep_step_1_text = "Complete";
     $ep_step_2 = "progress-bar-complete";
-    $ep_step_2_text = "Complete";
+    $ep_step_2_text = "Completed";
     $ep_step_hint = "<i class='text-muted'> - Approved Expert Panel</i>";
     break;
     default:
@@ -104,7 +104,7 @@ if($page->expert_panel_type."" == 2) {
     $status_value = "25";
     $ep_step_display = true;
     $ep_step_1 = "progress-bar-complete";
-    $ep_step_1_text = "Complete";
+    $ep_step_1_text = "Completed";
     $ep_step_2 = "progress-bar-current";
     $ep_step_2_text = "In progress";
     $ep_step_3 = "progress-bar-incomplete";
@@ -117,7 +117,7 @@ if($page->expert_panel_type."" == 2) {
     $status_value = "25";
     $ep_step_display = true;
     $ep_step_1 = "progress-bar-complete";
-    $ep_step_1_text = "Complete";
+    $ep_step_1_text = "Completed";
     $ep_step_2 = "progress-bar-complete";
     $ep_step_2_text = "Completed";
     $ep_step_3 = "progress-bar-current";
@@ -130,13 +130,13 @@ if($page->expert_panel_type."" == 2) {
     $status_value = "25";
     $ep_step_display = true;
     $ep_step_1 = "progress-bar-complete";
-    $ep_step_1_text = "Complete";
+    $ep_step_1_text = "Completed";
     $ep_step_2 = "progress-bar-complete";
-    $ep_step_2_text = "Complete";
+    $ep_step_2_text = "Completed";
     $ep_step_3 = "progress-bar-complete";
-    $ep_step_3_text = "Complete";
+    $ep_step_3_text = "Completed";
     $ep_step_4 = "progress-bar-complete";
-    $ep_step_4_text = "Complete";
+    $ep_step_4_text = "Completed";
     $ep_step_hint = "<i class='text-muted'> - Approved Expert Panel</i>";
     break;
     default:
