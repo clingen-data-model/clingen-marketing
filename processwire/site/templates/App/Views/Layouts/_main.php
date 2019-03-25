@@ -157,7 +157,7 @@ include("App/Views/Partials/render_search_bar.php");
       });
       
       // Update Address bar on tab state change
-      $('.nav-pills a, .nav-tabs a').click(function() {
+      $('.nav-url-state a').click(function() {
         var location  = "<?=$page->httpUrl ?>";
         var href      = $(this).attr("href");
         var update    = location + href;
