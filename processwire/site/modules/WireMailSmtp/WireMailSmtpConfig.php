@@ -77,8 +77,13 @@ class WireMailSmtpConfig extends Wire {
             $field->attr('value', $data['smtp_password']);
             $field->attr('type', 'password');
             $field->label = $this->_('SMTP password');
-            $field->description = $this->_('Set this variable to the user password when the SMTP server requires authentication');
-            $field->notes = $this->_('**Note**: Password is stored as plain text in database.');
+            //$field->description = $this->_('Set this variable to the user password when the SMTP server requires authentication');
+            //$field->notes = $this->_('**Note**: Password is stored as plain text in database.');
+      
+            // Updated to move the password into a config file and not the database
+            $field->description = $this->_('NOTE - this field is being overridden by a config file - No need to set');
+            $field->notes = $this->_('**Note**: This password is being set in the config');
+      
             $field->columnWidth = 50;
             $field->icon = 'asterisk';
             $fieldset->add($field);
