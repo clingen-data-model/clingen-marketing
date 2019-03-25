@@ -13,18 +13,12 @@ if($page->children) {
     //$urlChildren = $value->children("template=curation-documents-index|redirect-curations|redirect-interface")->each(function($child) {
     $vkey = 0;
     $urlChildren = $value->children()->each(function($child) {
-    	if($child->url_general){
-      	//return "<a href='$child->url_general' class='btn btn-sm btn-link pl-1 pr-1'>$child->title <i class=\"fas fa-external-link-alt\"></i></a>";
-    	} else if($child->url_curations){
-       return "<a href='$child->url_curations' class='btn btn-sm btn-link pl-1 pr-1'>$child->title <i class=\"fas fa-external-link-alt\"></i></a>";
-     } else if($child->url_interface){
-      	//return "<a href='$child->url_interface' class='btn btn-sm btn-link pl-1 pr-1'>$child->title <i class=\"fas fa-external-link-alt\"></i></a>";
-     } else if($vkey != ''){
-       return "<a href='$child->url' class='btn btn-sm btn-link pl-1 pr-1'>$child->title</a>";
-     }else {
-      	//return "<a href='$child->url' class='btn btn-sm btn-link pl-1 pr-1'>$child->title</a>";
-     }
-     $vkey++;
+      
+      if($child->template == "redirect-curations"){        
+        
+        return "<a href='{$child->url_curations}' class='btn btn-sm btn-link pl-1 pr-1'>$child->title <i class=\"fas fa-external-link-alt\"></i></a>";
+      }
+      
    });
 
     //$urlChildrenFirst = (count($urlChildren)) ? "<a href=\"{$urlChildren->httpUrl}\" class=\"btn btn-sm btn-link\">{$urlChildren->title}</a>" : "";

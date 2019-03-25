@@ -13,13 +13,16 @@
       	<?=$editable ?>
       	<ul class="list-inline pull-right m-0 p-1">
       	  <li class=''>
-      	    <a class=' text-white' href='<?=$pages->get(3053)->httpUrl ?>'><span class="visible-inline-md visible-inline-lg visible-inline-xl">Laboratory &amp; Clinician</span> Data Sharing Resources</a>
+      	    <a class=' text-white' href='<?=$pages->get(3053)->httpUrl ?>'><span class="visible-inline-md visible-inline-lg visible-inline-xl">Data Sharing Resources</a>
       	  </li>
       	  <li class=''>
       	    <a class=' text-white' href='<?=$pages->get(2303)->httpUrl ?>'>GenomeConnect</a>
       	  </li>
       	  <li class='visible-inline-md visible-inline-lg visible-inline-xl'>
       	    <a class=' text-white' href='<?=$pages->get(1086)->httpUrl ?>'>Events</a>
+      	  </li>
+      	  <li class='visible-inline-md visible-inline-lg visible-inline-xl'>
+      	    <a class=' text-white' href='<?=$pages->get(3482)->httpUrl ?>'>Contact</a>
       	  </li>
       	</ul>
       </div>

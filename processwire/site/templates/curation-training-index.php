@@ -107,7 +107,7 @@ if($relate_curation_docs){
   
   <div>
     <!-- Nav tabs -->
-    <ul class="nav nav-pills nav-justified" role="tablist">
+    <ul class="nav nav-pills nav-url-state nav-justified" role="tablist">
       <li role="presentation" class="active"><a href="#home" class="border-1" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-check-circle"></i> <?=($page->label_1) ? $page->label_1 : "Training Modules"?></a></li>
       <li role="presentation"><a href="#Documentation" class="border-1" aria-controls="Documentation" role="tab" data-toggle="tab"><i class="far fa-file"></i> <?=($page->label_2) ? $page->label_2 : "Additional Supporting Materials" ?></a></li>
       <!--    <li role="presentation"><a href="#Training" class="border-1" aria-controls="Training" role="tab" data-toggle="tab"><i class="fas fa-graduation-cap"></i> <?=($page->label_3) ? $page->label_3 : "All Training Materials" ?></a></li>-->
