@@ -26,6 +26,8 @@ $feedback_title   = $page->title;
 $feedback_title   = rawurlencode($feedback_title);
 $feedback_url     = rawurlencode($feedback_url);
 $feedback_ref     = "edwg";
+$typeahead_url    = $page->get(3530)->url_general;
+
 
 $showSearchBar    = ($page->rootParent == "1018") ? "" : "style='display: none'";
 
@@ -185,7 +187,7 @@ include("App/Views/Partials/render_search_bar.php");
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
           //url: 'https://search.clinicalgenome.org/kb/home.json?term=%QUERY',
-          url: 'http://localhost:3000/home.json?term=%QUERY',
+          url: '<?=typeahead_url?>/home.json?term=%QUERY',
           wildcard: '%QUERY'
         }
       });
@@ -194,7 +196,7 @@ include("App/Views/Partials/render_search_bar.php");
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-          url: 'http://localhost:3000/home.json?termGene=%QUERY',
+          url: '<?=typeahead_url?>/home.json?termGene=%QUERY',
           wildcard: '%QUERY'
         }
       });
@@ -203,7 +205,7 @@ include("App/Views/Partials/render_search_bar.php");
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-          url: 'http://localhost:3000/home.json?termDisease=%QUERY',
+          url: '<?=typeahead_url?>/home.json?termDisease=%QUERY',
           wildcard: '%QUERY'
         }
       });
