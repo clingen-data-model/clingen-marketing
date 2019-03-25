@@ -12,42 +12,89 @@ $input_ref        = $sanitizer->name($input->get->ref);
 $input_tool       = parse_url($feedback_url , PHP_URL_HOST);
 
 if($sanitizer->url($input->post->input_page)){
- if($session->CSRF->hasValidToken()) {
-  
-  $input_page               = $sanitizer->url($input->post->input_page);
-  $input_title              = $sanitizer->text($input->post->input_title);
-  $input_tool               = $sanitizer->text($input->post->input_tool);
-  $input_ref                = $sanitizer->text($input->post->input_ref);
-  $input_name               = $sanitizer->name($input->post->input_name);
-  $input_email              = $sanitizer->email($input->post->input_email);
-  $input_institution        = $sanitizer->text($input->post->input_institution);
-  $input_position           = $sanitizer->text($input->post->input_position);
-  $input_feedbackType       = $sanitizer->array($input->post->input_feedbackType);
-  $input_curationType       = $sanitizer->array($input->post->input_curationType);
-  $input_comments           = $sanitizer->textarea($input->post->input_comments);
+ 
+ if(!$sanitizer->name($input->post->input_feedback)) {
+   if($session->CSRF->hasValidToken()) {
+    
+    $input_page               = $sanitizer->url($input->post->input_page);
+    $input_title              = $sanitizer->text($input->post->input_title);
+    $input_tool               = $sanitizer->text($input->post->input_tool);
+    $input_ref                = $sanitizer->text($input->post->input_ref);
+    $input_name               = $sanitizer->name($input->post->input_name);
+    $input_email              = $sanitizer->email($input->post->input_email);
+    $input_institution        = $sanitizer->text($input->post->input_institution);
+    $input_position           = $sanitizer->text($input->post->input_position);
+    $input_feedbackType       = $sanitizer->array($input->post->input_feedbackType);
+    $input_curationType       = $sanitizer->array($input->post->input_curationType);
+    $input_comments           = $sanitizer->textarea($input->post->input_comments);
+     
+    if(!$input_name) {
+      $error .= "Missing your name;<br />";
+    }
+    if(!$input_email) {
+      $error .= "Missing your email;<br />";
+    }
+    if(!$input_institution) {
+      $error .= "Missing your instiution;<br />";
+    }
+    if(!$input_position) {
+      $error .= "Missing your position;<br />";
+    }
+    if(!$input_feedbackType) {
+      $error .= "Missing a feedback type;<br />";
+    }
+     
+    if($error) {
+      $message .= $page->body_3;
+      $message_css .= "alert-success";
+    } else {
+      
+      // Drop the errors into a message
+      $message .= "<h4>Error</h4>";
+      $message .= $error;
+      $message_css .= "alert-warning";
+    }
 
-  $message .= "It happen";
-} else {
-  $message .= "Error happen";
-}
+  } else {
+    $message .= "<h4>Sorry, something happen...</h4>";
+    $message_css .= "alert-success";
+  }
+ } else {
+    // This is the honeypot message... just make it look like it worked.
+    $message .= "Thanks";
+    $message_css .= "alert-success";
+ }
+  
+  if($message) {
+    $render_message = "
+      <div class='alert {$message_css}' role='alert'>{$message}</div>
+    ";
+  }
 }
 
 ?>
 
 <div pw-prepend="section_content"> 
   <div class="row">
-    <div class="lead" edit="body_1">
+    <div class="" edit="body_1">
      <?=$body ?></div>
-     <?=$message ?>
+     <?=$render_message ?>
      <div class="col-md-12 mt-3 collapseFormFeedbackItems text-center" id="">
       <button class="btn btn-outline-secondary" id="collapseFormFeedback2" type="button" data-toggle="collapse" data-target=".collapseFormFeedback" aria-expanded="false" aria-controls="collapseExample"><?=$page->label_1 ?></button>
     </div>
   </div>
-  <form class="needs-validation collapse collapseFormFeedback" id="" action="<?=$page->httpUrl?>">
+  <form class="needs-validation collapse collapseFormFeedback" name="form_feedback" id="form_feedback" method="post" action="<?=$page->httpUrl?>">
     <input type="hidden" name='input_page' value="<?= $input_page?>" >
     <input type="hidden" name='input_title' value="<?= $input_title?>" >
     <input type="hidden" name='input_tool' value="<?= $input_tool?>" >
     <input type="hidden" name='input_ref' value="<?= $input_ref?>" >
+    
+    <? 
+      // NOTE this inout a honey pot so don't remove.
+      // The input will be pulled off the screen.
+      // If provided by a bot then the submission will die
+    ?>
+    <input type="text" class="form-control" id="input_feedback" name="input_feedback" placeholder="Provide Feedback" value="" >
     <?= $session->CSRF->renderInput(); ?>
     <hr class="mb-4">
     <div class="row">
@@ -90,39 +137,39 @@ if($sanitizer->url($input->post->input_page)){
       <div class="d-block">
         <div class="custom-control">
           <input id="credit" name="input_feedbackType" type="checkbox" class="custom-control-input"  value="General Feedback" <?= ($input_feedbackType == "General Feedback") ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="credit">General Feedback</label>
+          <label class="custom-control-label text-normal" for="credit">General Feedback</label>
         </div>
         <div class="custom-control">
           <input id="curation" name="input_feedbackType" type="checkbox" class="custom-control-input"   value="Feedback about curation" <?= (in_array("Feedback about curation", $input_feedbackType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="curation">Feedback about curation</label>
+          <label class="custom-control-label text-normal" for="curation">Feedback about curation</label>
         </div>
         <div class="custom-control ml-4">
           <input id="GeneDisease" name="input_curationType" type="checkbox" class="custom-control-input"  value="Variant Pathogenicity" <?= (in_array("Variant Pathogenicity", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="GeneDisease">Gene-Disease Validity</label>
+          <label class="custom-control-label text-normal" for="GeneDisease">Gene-Disease Validity</label>
         </div>
         <div class="custom-control ml-4">
           <input id="Variant" name="input_curationType" type="checkbox" class="custom-control-input"  value="Variant Pathogenicity" <?= (in_array("Variant Pathogenicity", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="Variant">Variant Pathogenicity</label>
+          <label class="custom-control-label text-normal" for="Variant">Variant Pathogenicity</label>
         </div>
         <div class="custom-control ml-4">
           <input id="Actionability" name="input_curationType" type="checkbox" class="custom-control-input"  value="Clinical Actionability" <?= (in_array("Clinical Actionability", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="Actionability">Clinical Actionability</label>
+          <label class="custom-control-label text-normal" for="Actionability">Clinical Actionability</label>
         </div>
         <div class="custom-control ml-4">
           <input id="Dosage" name="input_curationType" type="checkbox" class="custom-control-input"  value="Dosage Sensitivity" <?= (in_array("Dosage Sensitivity", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="Dosage">Dosage Sensitivity</label>
+          <label class="custom-control-label text-normal" for="Dosage">Dosage Sensitivity</label>
         </div>
         <div class="custom-control ml-4">
           <input id="Othertool" name="input_curationType" type="checkbox" class="custom-control-input"  value="Other Tool/Resource" <?= (in_array("Other Tool/Resource", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="Othertool">Other Tool/Resource</label>
+          <label class="custom-control-label text-normal" for="Othertool">Other Tool/Resource</label>
         </div>
         <div class="custom-control">
           <input id="publication" name="input_feedbackType" type="checkbox" class="custom-control-input"   value="Share recent publication relevant to curation" <?= (in_array("Share recent publication relevant to curation", $input_feedbackType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="publication">Share recent publication relevant to curation</label>
+          <label class="custom-control-label text-normal" for="publication">Share recent publication relevant to curation</label>
         </div>
         <div class="custom-control">
           <input id="problem" name="input_feedbackType" type="checkbox" class="custom-control-input"   value="Report problem or broken feature<" <?= (in_array("Report problem or broken feature", $input_feedbackType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label" for="problem">Report problem or broken feature</label>
+          <label class="custom-control-label text-normal" for="problem">Report problem or broken feature</label>
         </div>
       </div>
       <div class="row mt-2">
@@ -142,7 +189,7 @@ if($sanitizer->url($input->post->input_page)){
               <label class="custom-control-label" for="save-info">I am interested in learning how to participate in ClinGen's curation efforts.</label>
             </div>
           -->
-
+          <input class="btn btn-primary btn-lg btn-block" type="submit" value="Submit Feedback" >
           <button class="btn btn-primary btn-lg btn-block" type="submit">Submit Feedback</button>
         </div>
         <div class="col-md-4 order-md-2 mb-4">
