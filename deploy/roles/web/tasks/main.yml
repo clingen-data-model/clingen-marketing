@@ -58,6 +58,11 @@
     regexp: '^short_open_tag = Off$'
     replace: 'short_open_tag = On'
     backup: yes
+- name: set php memory limit
+  replace:
+    path: /etc/php/7.0/apache2/php.ini
+    regexp: '^memory_limit =.*$'
+    replace: 'memory_limit = 2048M'
 - name: Create database for processwire
   mysql_db:
     name: pw
@@ -91,6 +96,15 @@
   template:
     src: config-sample.php.j2
     dest: /var/www/html/site/config.php
+- name: Clean uploaded assets
+  file:
+    state: absent
+    path: /var/www/html/site/assets/files
+- name: Link to asset dir
+  file:
+    state: link
+    path: /var/www/html/site/assets/files
+    src: /data/processwire-files
 - name: Ensure html dir owned by www
   file:
     path: /var/www/html
