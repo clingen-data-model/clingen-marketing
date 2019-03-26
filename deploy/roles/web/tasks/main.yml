@@ -20,11 +20,25 @@
 - name: Install php-pdo-mysql
   apt:
     name: php-pdo-mysql
-# - name: enable rewrites for httpd
-#   file:
-#     src: /etc/apache2/mods-available/rewrite.load
-#     dest: /etc/apache2/mods-enabled/rewrite.load
-#     state: link
+- name: Install php-gd
+  apt:
+    name: php-gd
+- name: configure SSL version of site
+  template:
+    src: default-ssl.conf.j2
+    dest: /etc/apache2/sites-available/default-ssl.conf
+- name: Copy site cert
+  copy:
+    src: clinicalgenome.org.crt
+    dest: /etc/ssl/certs/clinicalgenome.org.crt
+- name: Copy CA cert
+  copy:
+    src: AlphaSSLroot.crt
+    dest: /etc/ssl/certs/AlphaSSLroot.crt
+- name: Copy certificate key
+  copy:
+    src: clinicalgenome.org.key
+    dest: /etc/ssl/private/clinicalgenome.org.key 
 - name: enable mod_rewrite
   apache2_module:
     state: present
@@ -38,6 +52,12 @@
     src: /etc/apache2/sites-available/default-ssl.conf
     dest: /etc/apache2/sites-enabled/default-ssl.conf
     state: link
+- name: enable php short_open_tag
+  replace:
+    path: /etc/php/7.0/apache2/php.ini
+    regexp: '^short_open_tag = Off$'
+    replace: 'short_open_tag = On'
+    backup: yes
 - name: Create database for processwire
   mysql_db:
     name: pw
@@ -62,7 +82,7 @@
     recursive: yes
     rsync_opts:
       - "--exclude=sess*"
-      - "--exclude=processwire/site/assets/files/**"
+      - "--exclude=**/processwire/site/assets/files/**"
 - name: Copy htaccess
   copy:
     src: htaccess.txt
