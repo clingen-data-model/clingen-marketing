@@ -16,9 +16,22 @@
 @import "col.css";
 @import "typeahead.css";
 @import "table.css";
+@import "search-curations.css";
+@import "data-tables.css";
 
 
 
+#input_feedback {
+  position: absolute;
+  left: -1000;
+  top: -1000;
+}
+.clear-left {
+  clear: left;
+}
+.clear-right {
+  clear: right;
+}
 .affilate-list-bottom {
   bottom: 0; position: absolute; left: 25%;
 }

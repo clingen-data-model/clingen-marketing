@@ -136,11 +136,11 @@ if($fetch) {
       $render_primary_item = "
       <div class=\"col-lg-6 col-md-6 \">
       <div class=\"card\">
-      <a href=\"{$value->relate_page}\" class=\"hidden-md hidden-sm hidden-xs\">
+      <a href=\"{$value->relate_page->httpUrl}\" class=\"hidden-md hidden-sm hidden-xs\">
       <img src=\"{$image_icon_path}\" class=\"card-img-top\" alt=\"{$value->label_1}\">
       </a>
       <div class=\"card-body pt-3 pl-3 pr-3 pb-3\">
-      <a href=\"{$value->relate_page}\" class=\"\"><h5 class=\"card-title  p-0 m-0\">{$value->label_1}</h5></a>
+      <a href=\"{$value->relate_page->httpUrl}\" class=\"\"><h5 class=\"card-title  p-0 m-0\">{$value->label_1}</h5></a>
       <p class=\"card-text small\">{$value->summary}</p>
       </div>
       </div>
@@ -152,13 +152,13 @@ if($fetch) {
       <div class=\"card \">
       <div class=\"row no-gutters \">
       <div class=\"col-md-4 hidden-md hidden-sm hidden-xs \">
-      <a href=\"{$value->relate_page}\" class=\"\">
+      <a href=\"{$value->relate_page->httpUrl}\" class=\"\">
       <img src=\"{$image_icon_path}\" class=\"card-img-top\" alt=\"{$value->label_1}\">
       </a>
       </div>
       <div class=\"col-md-8 \">
       <div class=\"card-body p-2\">
-      <a href=\"{$value->relate_page}\" class=\"\"><h5 class=\"card-title h5 p-0 m-0\">{$value->label_1}</h5></a>
+      <a href=\"{$value->relate_page->httpUrl}\" class=\"\"><h5 class=\"card-title h5 p-0 m-0\">{$value->label_1}</h5></a>
       <p class=\"card-text small pb-0\">{$value->summary}</p>
       </div>
       </div>
@@ -170,11 +170,11 @@ if($fetch) {
       $render_other_items .= "
       <div class=\"col-lg-6 col-md-3 \">
       <div class=\"card  align-self-stretch\">
-      <a href=\"{$value->relate_page}\" class=\"hidden-md hidden-sm hidden-xs \">
+      <a href=\"{$value->relate_page->httpUrl}\" class=\"hidden-md hidden-sm hidden-xs \">
       <img src=\"{$image_icon_path}\" class=\"card-img-top\" alt=\"{$value->label_1}\">
       </a>
       <div class=\"card-body pt-3 pl-3 pr-3 pb-3\">
-      <a href=\"{$value->relate_page}\" class=\"\"><h5 class=\"card-title p-0 m-0 h6 \">{$value->label_1}</h5></a>
+      <a href=\"{$value->relate_page->httpUrl}\" class=\"\"><h5 class=\"card-title p-0 m-0 h6 \">{$value->label_1}</h5></a>
       <p class=\"card-text small\">{$value->summary}</p>
       </div>
       </div>

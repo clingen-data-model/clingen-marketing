@@ -1,6 +1,7 @@
-<div class="sr-only">
+<div class="">
 
 <?php
+  /*
 if($user->isSuperuser()) {
 	// If the page is editable, then output a link that takes us straight to the page edit screen:
 
@@ -61,5 +62,6 @@ if($user->isSuperuser()) {
 	 
 }
 
+*/
 ?>
 </div>

@@ -24,7 +24,7 @@ class WireMailSmtp extends WireMail implements Module, ConfigurableModule {
         return array(
             'title'     => 'Wire Mail SMTP',
             'version'   => '0.3.0',
-            'summary'   => "Extends WireMail, uses SMTP protocol (plain | SSL | TLS), provides: to, cc, bcc, attachments, priority, disposition notification, bulksending, ...",
+            'summary'   => "MODULE FEATURE OVERRIDEN - PASSWORD MOVED TO CONFIG - BEWARE OF UPDATES - Extends WireMail, uses SMTP protocol (plain | SSL | TLS), provides: to, cc, bcc, attachments, priority, disposition notification, bulksending, ...",
             'href'      => 'http://processwire.com/talk/topic/5704-module-wiremailsmtp/',
             'author'    => 'horst',
             'singular'  => false,

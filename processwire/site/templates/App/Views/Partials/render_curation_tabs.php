@@ -26,15 +26,17 @@
 		} else {
 		  $option['child-css'] = null;
 		}
-
+    
+    $title_tab = ($child->title_tab) ? $child->title_tab : $child->title;
+    
 		if($child->url_general){
-	  	$return = "<a class=\"nav-link pl-2 pr-2 {$option['child-css']}\" href=\"{$child->url_general}\">{$child->title} <i class=\"fas fa-external-link-alt\"></i></a>";
+	  	$return = "<a class=\"nav-link pl-2 pr-2 {$option['child-css']}\" href=\"{$child->url_general}\">{$$title_tab} <i class=\"fas fa-external-link-alt\"></i></a>";
 		} else if($child->url_curations){
-	  	$return = "<a class=\"nav-link pl-2 pr-2 {$option['child-css']}\" href=\"{$child->url_curations}\">{$child->title} <i class=\"fas fa-external-link-alt\"></i></a>";
+	  	$return = "<a class=\"nav-link pl-2 pr-2 {$option['child-css']}\" href=\"{$child->url_curations}\">{$title_tab} <i class=\"fas fa-external-link-alt\"></i></a>";
 		} else if($child->url_interface){
-	  	$return = "<a class=\"nav-link pl-2 pr-2 {$option['child-css']}\" href=\"{$child->url_interface}\">{$child->title} <i class=\"fas fa-external-link-alt\"></i></a>";
+	  	$return = "<a class=\"nav-link pl-2 pr-2 {$option['child-css']}\" href=\"{$child->url_interface}\">{$title_tab} <i class=\"fas fa-external-link-alt\"></i></a>";
 		} else {
-	  	$return = "<a class=\"nav-link pl-2 pr-2 {$option['child-css']}\" href=\"{$child->httpUrl}\">{$child->title}</a>";
+	  	$return = "<a class=\"nav-link pl-2 pr-2 {$option['child-css']}\" href=\"{$child->httpUrl}\">{$title_tab}</a>";
 		}
 		return "<li class=\"nav-item\">{$return}</li>";
 	});

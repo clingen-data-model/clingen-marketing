@@ -263,7 +263,8 @@
 }
 
 .pb-4,
-.py-4 {
+.py-4,
+.padding-bottom-lg {
   padding-bottom: 1.5rem !important;
 }
 

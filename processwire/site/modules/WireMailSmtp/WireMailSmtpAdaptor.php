@@ -158,6 +158,9 @@ class hnsmtp {
 	}
 
 	public function __construct($aConfig=null) {
+    
+    // Added to get the config settings
+    $config = wire('config');
 
 		if(!is_array($aConfig)) {
 			return;
@@ -183,7 +186,13 @@ class hnsmtp {
 		$this->emailMessage->smtp_ssl                  = $this->smtp_ssl;
 		$this->emailMessage->smtp_start_tls            = $this->smtp_start_tls;
 		$this->emailMessage->smtp_user                 = $this->smtp_user;
-		$this->emailMessage->smtp_password             = $this->smtp_password;
+    
+    // Removed because set below...
+		//$this->emailMessage->smtp_password             = $this->smtp_password;
+    
+    // The password is getting set by the config
+		$this->emailMessage->smtp_password             = $config->smtp_password;
+      
 		$this->emailMessage->smtp_certificate          = $this->smtp_certificate;
 
 		// advanced SMTP Server Settings

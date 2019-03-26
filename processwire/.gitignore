@@ -37,6 +37,7 @@ wire/modules/Jquery/JqueryTableSorter/JqueryTableSorter.min.js
 pwx.php
 .phpintel 
 
+*dwsync.xml
 site/config.php
 site/assets/cache/*
 !site/assets/cache/.gitkeep

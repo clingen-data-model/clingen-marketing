@@ -117,13 +117,17 @@ foreach ($siteRoot->children as $key => $value) {
 //        ";
 //      }
       if($child->children("template=curation-training-index")->first){
+        
+        $child_title = ($child->children("template='curation-training-index")->first->title_tab) ? $child->children("template='curation-training-index")->first->title_tab : $child->children("template='curation-training-index")->first->title;
         $nav_child  .= "
           <li class='nav-item {$option['dropdown-child-li']}'>
-            <a class='nav-link nav-link-small pl-4' href='{$child->children("template='curation-training-index")->first->httpUrl}'><span class=' d-inline-block text-truncate'><i class='fas fa-angle-double-right text-muted-more'></i> {$child->children("template='curation-training-index")->first->title}</span></a>
+            <a class='nav-link nav-link-small pl-4' href='{$child->children("template='curation-training-index")->first->httpUrl}'><span class=' d-inline-block text-truncate'><i class='fas fa-angle-double-right text-muted-more'></i> {$child_title}</span></a>
           </li>
         ";
       }
       if($child->children("template=redirect-curations")->first){
+        $child_title = ($child->children("template='redirect-curations")->first->title_tab) ? $child->children("template='redirect-curations")->first->title_tab : $child->children("template='redirect-curations")->first->title;
+        
         $nav_child  .= "
           <li class='nav-item {$option['dropdown-child-li']}'>
             <a class='nav-link nav-link-small pl-4' href='{$child->children("template='redirect-curations")->first->httpUrl}'><span class=' d-inline-block text-truncate'><i class='fas fa-angle-double-right text-muted-more'></i> {$child->children("template='redirect-curations")->first->title}</span></a>
