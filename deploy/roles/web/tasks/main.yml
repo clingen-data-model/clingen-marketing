@@ -23,6 +23,9 @@
 - name: Install php-gd
   apt:
     name: php-gd
+- name: Install php-xml
+  apt:
+    name: php-xml
 - name: configure SSL version of site
   template:
     src: default-ssl.conf.j2
@@ -63,6 +66,16 @@
     path: /etc/php/7.0/apache2/php.ini
     regexp: '^memory_limit =.*$'
     replace: 'memory_limit = 2048M'
+- name: set post_max_size
+  replace:
+    path: /etc/php/7.0/apache2/php.ini
+    regexp: '^post_max_size =.*$'
+    replace: 'post_max_size = 10M'
+- name: set upload_max_filesize
+  replace:
+    path: /etc/php/7.0/apache2/php.ini
+    regexp: '^upload_max_filesize =.*$'
+    replace: 'upload_max_filesize = 10M'
 - name: Create database for processwire
   mysql_db:
     name: pw
@@ -99,12 +112,12 @@
 - name: Clean uploaded assets
   file:
     state: absent
-    path: /var/www/html/site/assets/files
+    path: /var/www/html/site/assets
 - name: Link to asset dir
   file:
     state: link
-    path: /var/www/html/site/assets/files
-    src: /data/processwire-files
+    path: /var/www/html/site/assets
+    src: /data/processwire-assets
 - name: Ensure html dir owned by www
   file:
     path: /var/www/html

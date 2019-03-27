@@ -137,21 +137,21 @@ DirectoryIndex index.php index.html index.htm
   # ----------------------------------------------------------------------------------------------- 
 
   # RewriteCond %{REQUEST_URI} "[^-_.a-zA-Z0-9/~]"
-  
-  # # --- ProCache Manual Directives from 2019-03-22 16:34:46 ---------------------------------------
-  # # PROCACHE v4b8d5ca25e687d026ba33068f266e127
+
+  # --- ProCache Manual Directives from 2019-03-27 00:32:43 ---------------------------------------
+  # PROCACHE v4b8d5ca25e687d026ba33068f266e127
   RewriteCond %{REQUEST_METHOD} !=POST
   RewriteCond %{QUERY_STRING} !.*=.*
   RewriteCond %{HTTP_COOKIE} !^.*(wire_challenge|wires_challenge).*$
   RewriteCond %{DOCUMENT_ROOT}/site/assets/ProCache-d17ea5bcf7fca9a9bccbde305dafcd/$1/index.html -f
   RewriteRule ^(.*) %{DOCUMENT_ROOT}/site/assets/ProCache-d17ea5bcf7fca9a9bccbde305dafcd/$1/index.html [L]
-  # # /PROCACHE
-  # # If using UTF8 page names update the line below consistent with your $config->pageNameWhitelist
-  # # or copy the existing uncommented line from the PW-PAGENAME section of your .htaccess file.
+  # /PROCACHE
+  # If using UTF8 page names update the line below consistent with your $config->pageNameWhitelist
+  # or copy the existing uncommented line from the PW-PAGENAME section of your .htaccess file.
   RewriteCond %{REQUEST_URI} "^/~?[-_.a-zA-Z0-9/]*$"
-  # # --- End ProCache Manual Directives ------------------------------------------------------------
-  
-  
+  # --- End ProCache Manual Directives ------------------------------------------------------------  
+
+
   # RewriteCond %{REQUEST_FILENAME} !-f
   # RewriteCond %{REQUEST_FILENAME} !-d
   # RewriteRule ^(.*)$ index.php?it=/http404/ [L,QSA]
