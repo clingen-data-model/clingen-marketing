@@ -33,7 +33,7 @@ foreach ($nav_pill as $key => $value) {
 			<div class="col-sm-9" edit='body_2'>
 				<?=$page->body_2 ?>
 			</div>
-			<div class="col-sm-3 ">
+			<div class="col-sm-3 pb-3">
 				<div class="border-left-1 pl-3">
 					<?=$render_membership_nav ?>
 				</div>

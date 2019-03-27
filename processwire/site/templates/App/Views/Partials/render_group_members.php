@@ -26,7 +26,7 @@
 	if($data_chairs->count()) { 
 		$render_chairs_grid = "
 			<div class='user_group_chairs' edit='relate_user_leaderships'>
-				<h4>Chairs</h4>
+				<h4 class='heading-border'>Chairs</h4>
 				". render_member_grid($data_chairs, $defaultImgUserSquare) ."
 			</div>";
 		$render_chairs_list .= "";
@@ -43,7 +43,7 @@
 	if($data_leadership->count()) {  
 		$render_leadership_grid = "
 			<div class='user_group_leadership' edit='relate_user_committee'>
-				<h4>Leadership</h4>
+				<h4 class='heading-border'>Leadership</h4>
 			". render_member_grid($data_leadership, $defaultImgUserSquare) ."
 			</div>";
 		$render_leadership_list .= "";
@@ -52,7 +52,7 @@
 	if($data_coordinators->count()) { 
 		$render_coordinators_grid = "
 			<div class='user_group_coordinators' edit='relate_user_coordinators'>
-			<h4>Coordinators</h4>
+			<h4 class='heading-border'>Coordinators</h4>
 			". render_member_grid($data_coordinators, $defaultImgUserSquare) ."
 			</div>";
 		$render_coordinators_list .= "";
@@ -69,7 +69,7 @@
 	if($data_curators->count()) { 
 		$render_curators_grid = "
 			<div id='group_curators' class='user_group_members'  edit='relate_user_curators'>
-				<h4>Curators</h4>
+				<h4 class='heading-border'>Curators</h4>
 			". render_member_grid($data_curators, $defaultImgUserSquare) ."
 			</div>";
 		$render_members_list .= "";
@@ -78,7 +78,7 @@
 	if($data_members->count()) { 
 		$render_members_grid = "
 			<div id='group_members' class='user_group_members'  edit='relate_user_members'>
-				<h4>Members</h4>
+				<h4 class='heading-border'>Members</h4>
 			". render_member_grid($data_members, $defaultImgUserSquare) ."
 			</div>";
 		$render_members_list .= "";
@@ -87,7 +87,7 @@
 	if($data_past_members->count()) { 
 		$render_past_members_grid = "
 			<div class='user_group_past_members' edit='relate_user_members_past'>
-				<h4>Past Members</h4>
+				<h4 class='heading-border'>Past Members</h4>
 			". render_member_grid($data_past_members, $defaultImgUserSquare) ."
 			</div>";
 		$render_past_members_grid .= "";
@@ -116,20 +116,20 @@ $render_membership_grid = "
 	$nav_pill['member'] = "<a href='#heading_membership' class='badge badge-pill badge-info p-2 mr-2'>Membership <i class='fas fa-arrow-circle-down'></i></a>";
   }
 $render_membership = "
-		<h3 class='mt-5' id='heading_membership{$leadership_members->name}'>{$text_membership_prefix}</h3>
+		<h3 class='mt-5 heading-border' id='heading_membership{$leadership_members->name}'>{$text_membership_prefix}</h3>
 		<p>Membership spans many fields, including genetics, medical, academia, and industry.</p>
 		{$render_membership_grid}
 		<hr />
 	";
 
 $render_membership_nav .= "
-		<h5 class='mt-2'>Chairs</h5>
+		<h5 class='mt-2 '>Chairs</h5>
 		<div class='small'>{$render_chairs_nav}</div>
 ";
 if($render_coordinators_nav) {
 	$render_membership_nav .= "
 			<hr />
-			<h5>Coordinators</h5>
+			<h5 class=' '>Coordinators</h5>
 			<div class='small'>Please contact a coordinator if you have questions.</div>
 			<div class='small'>{$render_coordinators_nav}</div>		
 		";

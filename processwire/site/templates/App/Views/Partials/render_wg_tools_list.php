@@ -76,7 +76,7 @@ if($fetch->count()) {
   $nav_pill['tools'] = "<a href='#heading_tools' class='badge badge-pill badge-info p-2 mr-2'>Tools  <i class='fas fa-arrow-circle-down'></i></a>";
   //$render_tools = "<h3 class='mt-5' id='heading_tools'>Tools &amp; Resources</h3><div class=''>{$render_page_children_item}</div>";
 
-  $render_tools = "<h3 class='mt-5' id='heading_tools'>Tools &amp; Resources</h3>
+  $render_tools = "<h3 class='mt-5 heading-border' id='heading_tools'>Tools &amp; Resources</h3>
     <div class='row'>
       <div class='col-md-9'>
         <div class='card mb-3 ' id=''>

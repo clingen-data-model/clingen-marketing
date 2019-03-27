@@ -29,7 +29,7 @@ if($fetch) {
     <div class='col-md-6 '>
     <div class=\"card mb-3  \">
     <div class=\"row no-gutters bg-light \">
-    <div class=\"col-md-3  \">
+    <div class=\"col-md-3 hidden-sm hidden-xs \">
     <a class='' href='{$value->httpUrl}'> <img src=\"{$img}\" class=\"card-img p-3\" alt=\"{$value->title}\"></a>
     </div>
     <div class=\"col-md-9 bg-white\">
@@ -59,23 +59,33 @@ if($fetch) {
 
 
     $render_page_children_item .= "
-    <li class='{$option['css']} col-md-6 mt-1 mb-3'>
-    <div class='d-flex '>
-    <div class='col-sm-2 align-self-start col-xs-1 padding-right-none'>
-    <a class='icon-lg text-muted' href='{$value->httpUrl}'>
-    {$icon}
-    </a>
-    </div>
-    <div class=' padding-right-none align-self-start'>
-    <a class='small text-muted strong' href='{$value->httpUrl}'>{$value->document_date}</a>
-    <a class='' href='{$value->httpUrl}'><h5 class='m-0 p-0'>{$value->title}</h5></a>
-    <div class='text-muted small'>{$value->summary}</div>
-    </div>
-    </div>
+    <li class='{$option['css']} col-md-6 mt-1 mb-3 clearfix'>
+    <table>
+      <tr>
+        <td class=' hidden-xs pr-2'>
+          <a class='icon-lg text-muted' href='{$value->httpUrl}'>
+            {$icon}
+          </a>
+        </td>
+        <td class='w-100'>
+          <a class='small text-muted strong' href='{$value->httpUrl}'>{$value->document_date}</a>
+          <a class='' href='{$value->httpUrl}'><h5 class='m-0 p-0'>{$value->title}</h5></a>
+          <div class='text-muted small'>{$value->summary}</div>
+        </td>
+      </tr>
+    </table>
     </li>
     ";
+    
+    if(($key + 1) == count($fetch) ){
+    $render_page_children_items .=  "<div class='wrap-row clearfix'>{$render_page_children_item}</div>"; 
+    unset($render_page_children_item);
+  } else if(($key + 1)%2 == 0) {
+    $render_page_children_items .=  "<div class='wrap-row clearfix'>{$render_page_children_item}</div>"; 
+    unset($render_page_children_item);
+  } 
   }
-  $render_recent_news = "<ul class='list-unstyled row'>".$render_page_children_item."</ul>";
+  $render_recent_news = "<ul class='list-unstyled'>".$render_page_children_items."</ul>";
   unset($render_page_children_item);
 }
 

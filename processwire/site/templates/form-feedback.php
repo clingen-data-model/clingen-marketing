@@ -1,76 +1,124 @@
 <?
 
+
+$captcha = $modules->get("MarkupGoogleRecaptcha");
+$footer_js .= $captcha->getScript();
+
+
+
 $body = $page->body_1;  
 
 $body = str_replace("<ul>", "<ul class='list-unstyled pl-3'>", $body);
 $body = str_replace("<li>", "<li><i class='fas fa-exclamation-triangle'></i> ", $body);
 
-$input_page       = rawurldecode($input->get->page); 
-$input_page       = $sanitizer->url($input_page);
-$input_title      = $sanitizer->text($input->get->title);
-$input_ref        = $sanitizer->name($input->get->ref);
-$input_tool       = parse_url($feedback_url , PHP_URL_HOST);
+  $input_page       = rawurldecode($input->get->page); 
+  $input_page       = $sanitizer->url($input_page);
+  $input_page       = ($input_page) ? $input_page : $page->httpUrl;
+  $input_title      = $sanitizer->text($input->get->title);
+  $input_title      = ($input_title) ? $input_title : $page->title;
+  $input_ref        = $sanitizer->name($input->get->ref);
+  $input_ref        = ($input_ref) ? $input_ref : "edwg";
+  //$input_tool       = parse_url($feedback_url , PHP_URL_HOST);
 
-if($sanitizer->url($input->post->input_page)){
- 
- if(!$sanitizer->name($input->post->input_feedback)) {
-   if($session->CSRF->hasValidToken()) {
-    
-    $input_page               = $sanitizer->url($input->post->input_page);
-    $input_title              = $sanitizer->text($input->post->input_title);
-    $input_tool               = $sanitizer->text($input->post->input_tool);
-    $input_ref                = $sanitizer->text($input->post->input_ref);
-    $input_name               = $sanitizer->name($input->post->input_name);
-    $input_email              = $sanitizer->email($input->post->input_email);
-    $input_institution        = $sanitizer->text($input->post->input_institution);
-    $input_position           = $sanitizer->text($input->post->input_position);
-    $input_feedbackType       = $sanitizer->array($input->post->input_feedbackType);
-    $input_curationType       = $sanitizer->array($input->post->input_curationType);
-    $input_comments           = $sanitizer->textarea($input->post->input_comments);
-     
-    if(!$input_name) {
-      $error .= "Missing your name;<br />";
+   if(!$sanitizer->name($input->post->input_feedback)) {
+     if($session->CSRF->hasValidToken()) {
+      $submit_page               = $sanitizer->url($input->post->input_page);
+      $submit_page               = ($submit_page) ? $submit_page : $page->httpUrl;
+      $submit_title              = $sanitizer->text($input->post->input_title);
+      $submit_ref                = $sanitizer->name($input->post->input_ref);
+      $submit_ref                = ($submit_ref) ? $submit_ref : "edwg";
+      $submit_name               = $sanitizer->text($input->post->input_name);
+      $submit_email              = $sanitizer->email($input->post->input_email);
+      $submit_institution        = $sanitizer->text($input->post->input_institution);
+      $submit_position           = $sanitizer->text($input->post->input_position);
+      $submit_feedbackType       = $sanitizer->array($input->post->input_feedbackType);
+      $submit_curationType       = $sanitizer->array($input->post->input_curationType);
+      $submit_comments           = $sanitizer->purify($sanitizer->textarea($input->post->input_comments));
+
+      if(!$submit_name) {
+        $error .= "Missing your name...<br />";
+      }
+      if(!$submit_email) {
+        $error .= "Missing your email...<br />";
+      }
+      if(!$submit_institution) {
+        $error .= "Missing your instiution...<br />";
+      }
+      if(!$submit_position) {
+        $error .= "Missing your position...<br />";
+      }
+      if(!$submit_feedbackType) {
+        $error .= "Missing a feedback type...<br />";
+      }
+
+      if ($captcha->verifyResponse() === true) {
+      } else {
+        $error .= "ReCaptcha didn't work... try again<br />";
+      }
+
+      if($error) {
+        // Drop the errors into a message
+        $message .= "<h4>Error</h4>";
+        $message .= $error;
+        $message_css .= "alert-warning";
+      } else {
+        
+        // Go do the work to send now.
+        
+        foreach($submit_feedbackType as $item) {
+          $feedbackType .= $item . " \r\n ";
+        }
+        foreach($submit_curationType as $item) {
+          $curationType .= $item . " \r\n ";
+        }
+        
+        //Email to 
+        $subject = "ClinGen Website Feedback Form";
+        $bodyHTML .= "The following person has requested a page in the website to be reviewed.\r\n";
+        $bodyHTML .= "\r\n Name:\r\n    ". $submit_name;
+        $bodyHTML .= "\r\n\r\n Email:\r\n    ". $submit_email;
+        $bodyHTML .= "\r\n\r\n Institution:\r\n    ". $submit_institution;
+        $bodyHTML .= "\r\n\r\n Position:\r\n    ". $submit_position;
+        $bodyHTML .= "\r\n\r\n Comments/Message:\r\n    ". $submit_comments;
+        $bodyHTML .= "\r\n\r\n Page URL:\r\n    ". $submit_page;
+        $bodyHTML .= "\r\n\r\n Page Title:\r\n    ". $submit_title;
+        $bodyHTML .= "\r\n\r\n Curation Type:\r\n    ". $curationType;
+        $bodyHTML .= "\r\n\r\n Feedback Type:\r\n    ". $feedbackType;
+        $logthis = "CONTACT REQUEST - Name: ". $submit_name ." ||| Email: ". $submit_email ." ||| Institution: ". $submit_institution. " ||| Position: ". $submit_position. " ||| Comments: ". $submit_comments. " ||| Page URL: ". $submit_page. " ||| Page Title: ". $submit_title. " ||| Curation Type: ". $curationType. " |||  Feedback Type: ". $feedbackType;
+        
+        $send_email_to = "scottg@creationproject.com";
+        $mailto = "{$send_email_to}"; 
+        $info = "From: {$send_email_to}" . "\r\n" . "Do Not Reply."; //Header information.
+        if(mail($mailto, $subject, $bodyHTML, $info)){ //If e-Mail was sent 
+          //$log->save('emailtracker', "email success");
+        } else {
+          //$log->save('emailtracker', "email failed");  
+        }
+        unset($bodyHTML);
+        $log->save('clingen-feedback-form', $logthis);
+        
+        
+        
+        
+        
+        
+        $message .= $page->body_3;
+        $message_css .= "alert-success";
+      }
+
     }
-    if(!$input_email) {
-      $error .= "Missing your email;<br />";
-    }
-    if(!$input_institution) {
-      $error .= "Missing your instiution;<br />";
-    }
-    if(!$input_position) {
-      $error .= "Missing your position;<br />";
-    }
-    if(!$input_feedbackType) {
-      $error .= "Missing a feedback type;<br />";
-    }
-     
-    if($error) {
-      $message .= $page->body_3;
+   } else {
+      // This is the honeypot message... just make it look like it worked.
+      $message .= "Thanks";
       $message_css .= "alert-success";
-    } else {
-      
-      // Drop the errors into a message
-      $message .= "<h4>Error</h4>";
-      $message .= $error;
-      $message_css .= "alert-warning";
+   }
+
+    if($message) {
+      $render_message = "
+        <div class='alert {$message_css}' role='alert'>{$message}</div>
+      ";
     }
 
-  } else {
-    $message .= "<h4>Sorry, something happen...</h4>";
-    $message_css .= "alert-success";
-  }
- } else {
-    // This is the honeypot message... just make it look like it worked.
-    $message .= "Thanks";
-    $message_css .= "alert-success";
- }
-  
-  if($message) {
-    $render_message = "
-      <div class='alert {$message_css}' role='alert'>{$message}</div>
-    ";
-  }
-}
 
 ?>
 
@@ -175,7 +223,7 @@ if($sanitizer->url($input->post->input_page)){
       <div class="row mt-2">
         <div class="col-md-12">
           <h5 class="mb-0">Your Feedback/Comments (required)</h5>
-          <textarea class="form-control" id="cc-name" name="input_comments" placeholder="Comments" rows="10" required> </textarea>
+          <textarea class="form-control" id="cc-name" name="input_comments" placeholder="Comments" rows="10" required><?=$input_comments ?> </textarea>
         </div>
       </div>
 
@@ -189,8 +237,11 @@ if($sanitizer->url($input->post->input_page)){
               <label class="custom-control-label" for="save-info">I am interested in learning how to participate in ClinGen's curation efforts.</label>
             </div>
           -->
+      <div class="p-3 text-center">
+          <?=$captcha->render() ?>
+        </div>
           <input class="btn btn-primary btn-lg btn-block" type="submit" value="Submit Feedback" >
-          <button class="btn btn-primary btn-lg btn-block" type="submit">Submit Feedback</button>
+        
         </div>
         <div class="col-md-4 order-md-2 mb-4">
           <ul class="list-group mb-3">
@@ -200,20 +251,11 @@ if($sanitizer->url($input->post->input_page)){
                 <h6 class="my-0"><?= $input_title?></h6>
                 <small class="text-muted">Page Subject Matter</small>
               </div>
-            </li>
-            <li class="list-group-item d-flex justify-content-between lh-condensed">
-              <div>
-                <h6 class="my-0"><?= $input_tool?></h6>
-                <small class="text-muted">Website/Tool</small>
-              </div>
-            </li>        
+            </li>     
             <li class="list-group-item bg-light">
-              <div class="">
-               <div class="input-group input-group-sm">
-                 <input type="text" class="form-control" disabled="disabled" value="<?= $input_page?>" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
-                 <div class="input-group-append">
-                   <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fas fa-external-link-alt"></i></button>
-                 </div>
+              <div class=" w-100">
+               <div class="input-group w-100 input-group-sm">
+                 <input type="text" class="form-control w-100" disabled="disabled" value="<?= $input_page?>" placeholder="Page Subject Matter" aria-label="Page Subject Matter" aria-describedby="button-addon2">
                </div>
                <small>Complete Web Address</small>
              </div>

@@ -20,13 +20,16 @@
 
 
 $siteRoot               = $pages->get('/');
+$pageTitle         =  ($page->id == $pages->get('/')->id) ?  $page->title : "{$page->title} - ClinGen | Clinical Genome Resource";
+$pageSeoDesc       =  ($page->seo_description) ?  $page->seo_description : $page->summary;
+$pageSeoKeywords       =  ($page->metadata_search_terms) ?  $page->metadata_search_terms : $pageTitle;
 
 $feedback_url     = $page->httpUrl;
 $feedback_title   = $page->title;
 $feedback_title   = rawurlencode($feedback_title);
 $feedback_url     = rawurlencode($feedback_url);
 $feedback_ref     = "edwg";
-$typeahead_url    = $page->get(3530)->url_general;
+$typeahead_url    = $pages->get(3530)->url_general;
 
 
 $showSearchBar    = ($page->rootParent == "1018") ? "" : "style='display: none'";
@@ -39,10 +42,11 @@ include("App/Views/Partials/render_search_bar.php");
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <meta name="description" content="<?=$pageSeoDesc ?>">
+  <meta name="keywords" content="<?=$pageSeoKeywords ?>">
+  <meta name="author" content="Clinical Genome Resource">
 
-  <title><?=$page->title ?> - <?=$siteRoot->title ?></title>
+  <title><?=$pageTitle ?></title>
 
   <!-- Bootstrap core CSS -->
   <!--    <link href="<?= $config->urls->templates ?>resources/packages/bootstrap/css/bootstrap.css" rel="stylesheet">-->
@@ -53,6 +57,17 @@ include("App/Views/Partials/render_search_bar.php");
   <link href="<?= $config->urls->templates ?>resources/css/master.css" rel="stylesheet">
 
   <link href="<?= $config->urls->templates ?>resources/packages/fontawesome/css/all.min.css" rel="stylesheet">
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-49947422-1', 'auto');    //7
+    ga('send', 'pageview');
+
+  </script>
 
 </head>
 
@@ -186,8 +201,7 @@ include("App/Views/Partials/render_search_bar.php");
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-          //url: 'https://search.clinicalgenome.org/kb/home.json?term=%QUERY',
-          url: '<?=typeahead_url?>/home.json?term=%QUERY',
+          url: '<?=$typeahead_url?>/home.json?term=%QUERY',
           wildcard: '%QUERY'
         }
       });
@@ -196,7 +210,7 @@ include("App/Views/Partials/render_search_bar.php");
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-          url: '<?=typeahead_url?>/home.json?termGene=%QUERY',
+          url: '<?=$typeahead_url?>/home.json?termGene=%QUERY',
           wildcard: '%QUERY'
         }
       });
@@ -205,7 +219,7 @@ include("App/Views/Partials/render_search_bar.php");
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-          url: '<?=typeahead_url?>/home.json?termDisease=%QUERY',
+          url: '<?=$typeahead_url?>/home.json?termDisease=%QUERY',
           wildcard: '%QUERY'
         }
       });
@@ -271,6 +285,16 @@ include("App/Views/Partials/render_search_bar.php");
             $("#list_documentation_table li").show();
           }
         });
+        $('.btn_list_all_documents').click(function () {
+            // Make all checked filters unchecked
+            $('#filter_list :checkbox'). prop("checked", false);
+            // Show all the documents
+            $('.list-group-item-document').show();
+            // Hide buttom button
+            $('.btn_list_all_documents_bottom').hide();
+        });
+        
+        
       });
 
     </script>

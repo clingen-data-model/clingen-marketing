@@ -23,7 +23,7 @@ if($fetch->count()) {
       <div class='col-md-6 '>
         <div class=\"card mb-3  \">
            <div class=\"row no-gutters bg-light  \">
-            <div class=\"col-md-3  \">
+            <div class=\"col-md-3 hidden-xs hidden-sm  \">
              <img src=\"{$img}\" class=\"card-img p-3\" alt=\"{$value->label_1}\">
             </div>
             <div class=\"col-md-9 bg-white card-radius-r\">
