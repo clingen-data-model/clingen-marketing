@@ -273,9 +273,16 @@ include("App/Views/Partials/render_search_bar.php");
     </script>
     
     <script type="text/javascript">
-
+      // Used to toggle the documents
       $(document).ready(function () {
         $('#filter_list :checkbox').click(function () {
+          
+          // First, clear all
+          $('.list-group-item-document').hide();
+          // Make sure the show all at bottom is hidden
+          $('.btn_list_all_documents_bottom').hide();
+          
+          // Now do the smart stuff
           if ($('input:checkbox:checked').length) {
             $('#list_documentation_table li').hide();
             $('input:checkbox:checked').each(function () {
@@ -285,10 +292,13 @@ include("App/Views/Partials/render_search_bar.php");
             $("#list_documentation_table li").show();
           }
         });
+        
+        // Used to show all of the documents
         $('.btn_list_all_documents').click(function () {
             // Make all checked filters unchecked
             $('#filter_list :checkbox'). prop("checked", false);
             // Show all the documents
+            $('.list-group-item-document').hide();
             $('.list-group-item-document').show();
             // Hide buttom button
             $('.btn_list_all_documents_bottom').hide();
