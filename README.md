@@ -18,6 +18,10 @@ site.yml is the master playbook for deploying the site. This playbook is idempot
 
 When deploying the site for the first time, a couple steps must be performed manually: the pw database in MariaDB must be initialized and the site's assets must be uploaded. In future this will be automated.
 
+To run the deployment script, the following command will suffice once your secrets file is properly configured:
+
+    ansible-playbook -i <target> site.yml
+
 ### Initialize DB
 
 The site is run from the pw database on localhost, with user pw and password pw. MariaDB is not reachable from other hosts. Copy a current sql dump to the deployment server and import it into the pw database to initialize it, eg:
