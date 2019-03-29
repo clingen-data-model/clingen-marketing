@@ -55,67 +55,8 @@ $img = ($page->image_1) ? $page->image_1->width(800)->url : $config->imgSquareSt
 
 <div pw-prepend="section_content">
   <div edit="body_2"><img src="/site/assets/files/1020/tool-image.800x0.jpg" class="pull-right" style="width:400px;"><?=$page->body_2 ?></div>
-  <div class=" text-center pt-5 pb-5"><span class="btn-group" role="group"><a href="#rich_media_1" class="btn btn-outline-primary">Overview &amp; Getting Started</a><a href="#rich_media_2" class="btn btn-outline-primary">infoButton Overview</a><a href="#rich_media_2" class="btn btn-outline-primary">ClinGen's InfoButton Profile</a><a href="#rich_media_3" class="btn btn-outline-primary">List Of Genomic Resources</a></span></div>
   <hr />
-  <table class="w-100">
-    <tr>
-      <td width="25%" valign="top"><img src="/site/assets/files/1020/tool-image.800x0.jpg" class="img-fluid">
-      </td>
-      <td class="pl-5">
-        <h2>Overview</h2>
-        <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
-        <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
-        <h3 class="pt-4">Steps to Get Started</h3>
-        <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
-        <ul>
-          <li>Ea eos meliore nusquam accumsan, graecis consulatu pri no, ut commodo eripuit detraxit mea.</li>
-          <li>Qui quodsi appetere an, vix soleat euismod lucilius no. </li>
-          <li>Ex nec integre evertitur forensibus, at nullam senserit vim.</li>
-          <li>Dolorum luptatum at est, id alia aeque vituperatoribus mei, est at verear intellegebat consectetuer.</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td width="" class="pt-4 pb-4" colspan="2">
-        <hr class="" />
-      </td>
-    </tr>
-    <tr>
-      <td width="25%" valign="top"><img src="https://clingen2019v2.creationproject.net/site/assets/files/2270/project_logo.jpg" class="img-fluid">
-      </td>
-      <td class="pl-5">
-        <h2>About infoButton</h2>
-        <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
-        <ul>
-          <li>Qui quodsi appetere an, vix soleat euismod lucilius no. </li>
-          <li>Ex nec integre evertitur forensibus, at nullam senserit vim.</li>
-          <li>Dolorum luptatum at est, id alia aeque vituperatoribus mei, est at verear intellegebat consectetuer.</li>
-        </ul>
-        <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
-      </td>
-    </tr>
-    <tr>
-      <td width="" class="pt-4 pb-4" colspan="2">
-        <hr />
-      </td>
-    </tr>
-    <tr>
-      <td width="25%" valign="top"><img src="https://clingen2019v2.creationproject.net/site/assets/files/2270/project_logo_copy_copy.jpg" class="img-fluid">
-      </td>
-      <td class="pl-5">
-        <h2>ClinGen's infoButton Profile</h2>
-        <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
-        <ul>
-          <li>Qui quodsi appetere an, vix soleat euismod lucilius no. </li>
-          <li>Ex nec integre evertitur forensibus, at nullam senserit vim.</li>
-          <li>Dolorum luptatum at est, id alia aeque vituperatoribus mei, est at verear intellegebat consectetuer.</li>
-        </ul>
-        <p>Lorem ipsum dolor sit amet, vis partem detraxit facilisi ut. An eos nulla graeci possit, dico diceret usu ex, has autem dicat nobis ad. Te alii etiam partem qui, labore pertinax temporibus an qui. Sed cu summo tacimates.</p>
-      </td>
-    </tr>
-  </table>
-  <hr />
-  <h3>List of Genomic Resources</h3>
+  <h2>List of Genomic Resources</h2>
   Navigate each genomic resources below and query each resource individually. 
   <?=$render_items ?>
 </div>
