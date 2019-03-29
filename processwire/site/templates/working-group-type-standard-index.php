@@ -25,7 +25,7 @@ foreach ($nav_pill as $key => $value) {
 				<div class="section-heading-content" edit='body_1'><?=$page->body_1 ?></div>
 				<?=$render_nav_pill ?>
 			</div>
-			<div class="col-sm-3 ">
+			<div class="col-sm-3 hidden-xs ">
 				<img src="<?=$wgimg?>" edit='image_icon_1' class="img-fluid rounded-circle img-thumbnail">
 			</div>
 		</div>

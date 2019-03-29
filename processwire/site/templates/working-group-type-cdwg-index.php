@@ -22,7 +22,7 @@ foreach ($nav_pill as $key => $value) {
 				</span></div>
 				<?=$render_nav_pill ?>
 			</div>
-			<div class="col-sm-3 ">
+			<div class="col-sm-3 hidden-xs ">
 				<img src="<?=$imgPage?>" class="img-fluid rounded-circle img-thumbnail">
 			</div>
 		</div>

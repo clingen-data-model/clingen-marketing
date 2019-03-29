@@ -31,7 +31,7 @@ $img_1 = ($page->image_1) ? "<img src=".$page->image_1->width(600)->url." class=
 			<div class="content col-sm-9 pr-md-5 pt-md-4 pb-md-3">
 				<div class="section-heading-content"><?=($page->body_1) ? $page->body_1 : "<h1>".$page->title."</h1>"; ?></div>
 			</div>
-			<div class="col-sm-2 ">
+			<div class="col-sm-2 hidden-xs ">
 				<img src="<?=$img_icon?>" class="img-fluid img-thumbnail">
 			</div>
 		</div>

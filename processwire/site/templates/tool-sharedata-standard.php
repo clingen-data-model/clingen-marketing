@@ -20,7 +20,7 @@ include("App/Views/Partials/render_sharedata_tabs.php");
 			<div class="content col-sm-9 pr-md-5 pt-md-4 pb-md-3">
 				<div class="section-heading-content" edit="body_1"><?=($page->body_1) ? $page->body_1 : "<h1>".$page->title."</h1>"; ?></div>
 			</div>
-			<div class="col-sm-2 ">
+			<div class="col-sm-2 hidden-xs ">
 				<img src="<?=$img?>" class="img-fluid img-thumbnail">
 			</div>
 		</div>

@@ -8,7 +8,7 @@ $img = ($page->image_icon_1) ? $page->image_icon_1->width(600)->url : $config->i
 			<div class="col-sm-9 content  pr-md-5 pt-md-4 pb-md-3">
 				<div class="section-heading-content" edit="body_1"><?=($page->body_1) ? $page->body_1 : "<h1>".$page->title."</h1>"; ?></div>
 			</div>
-			<div class="col-sm-3 ">
+			<div class="col-sm-3 hidden-xs ">
 				<img src="<?=$img?>" class="img-fluid" edit="image_icon_1">
 			</div>
 		</div>
