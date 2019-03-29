@@ -14,21 +14,21 @@ foreach ($siteRoot->children as $key => $value) {
     $option['css'] = null;
   }
 
-  if($value->children->count() > 30) {
+  if($value->children->count() > 40) {
     $option['footer-col'] = 'col-md-6 text-truncate';
     $option['dropdown-li'] = 'dropdown';
     $option['dropdown-li-a'] = 'dropdown-toggle';
     $option['dropdown-child-li'] = 'col-md-6 float-right pt-1 pl-3 pr-4';
     $option['dropdown-children-ul'] = 'row dropdown-menu dropdown-width-triple dropdown-menu-right dropdown-menu-lg-left';
     //$option['dropdown-li-a-data'] = ' data-toggle="dropdown"';
-  } else if($value->children->count() > 20) {
+  } else if($value->children->count() > 30) {
     $option['footer-col'] = 'col-md-6 text-truncate';
     $option['dropdown-li'] = 'dropdown';
     $option['dropdown-li-a'] = 'dropdown-toggle';
     $option['dropdown-child-li'] = 'col-md-6 float-right pt-1 pl-3 pr-4';
     $option['dropdown-children-ul'] = 'row dropdown-menu dropdown-width-double dropdown-menu-right dropdown-menu-lg-left';
     //$option['dropdown-li-a-data'] = ' data-toggle="dropdown"';
-  } else if($value->children->count() > 10) {
+  } else if($value->children->count() > 20) {
     $option['footer-col'] = 'col-md-6 text-truncate';
     //$option['dropdown-li-a-data'] = ' data-toggle="dropdown"';
   } else if ($value->children->count()) {
@@ -130,7 +130,7 @@ foreach ($siteRoot->children as $key => $value) {
         
         $nav_child  .= "
           <li class='nav-item {$option['dropdown-child-li']}'>
-            <a class='nav-link nav-link-small pl-4' href='{$child->children("template='redirect-curations")->first->httpUrl}'><span class=' d-inline-block text-truncate'><i class='fas fa-angle-double-right text-muted-more'></i> {$child->children("template='redirect-curations")->first->title}</span></a>
+            <a class='nav-link nav-link-small pl-4' href='{$child->children("template='redirect-curations")->first->url_curations}'><span class=' d-inline-block text-truncate'><i class='fas fa-angle-double-right text-muted-more'></i> {$child->children("template='redirect-curations")->first->title}</span></a>
           </li>
         ";
       }

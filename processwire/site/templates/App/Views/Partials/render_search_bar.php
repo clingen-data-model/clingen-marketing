@@ -43,7 +43,7 @@ $search_main = "
             <table>
               <tr>
                 <td>
-                  <input type='text' class='form-control border-radius-none w-100 queryDisease' aria-label='' name='term' id='' placeholder='Disease...'
+                  <input type='text' class='form-control border-radius-none w-100 queryDisease' aria-label='' name='term' id='' placeholder='Disease...'>
                 </td>
                 <td style='width:1%'>
                   <span class='input-group-btn'>
@@ -62,12 +62,12 @@ $search_main = "
             Browse Curations
           </a>
           <div class='dropdown-menu border-radius-sm  dropdown-menu-right' aria-labelledby='dropdownMenuButton'>
-            <li><a class='dropdown-item' href='/curation-activities/'>About ClinGen\'s Curation Activities</a></li>
+            <li><a class='dropdown-item' href='https://www.clinicalgenome.org//curation-activities/'>About ClinGen's Curation Activities</a></li>
             <li class='dropdown-divider'></li>
-            <li><a class='dropdown-item' href='http://localhost:3000/curations/'><span class='text-muted'>Browse</span> All Curated Genes</a></li>
-            <li><a class='dropdown-item' href='http://localhost:3000/gene-validity/'><span class='text-muted'>Browse</span> Gene-Disease Validity</a></li>
-            <li><a class='dropdown-item' href='http://localhost:3000/gene-dosage/'><span class='text-muted'>Browse</span> Dosage Sensitivity</a></li>
-            <li><a class='dropdown-item' href='http://localhost:3000/actionability/'><span class='text-muted'>Browse</span> Clinical Actionability</a></li>
+            <li><a class='dropdown-item' href='https://search.clinicalgenome.org/kb/curations/'><span class='text-muted'>Browse</span> All Curated Genes</a></li>
+            <li><a class='dropdown-item' href='https://search.clinicalgenome.org/kb/gene-validity/'><span class='text-muted'>Browse</span> Gene-Disease Validity</a></li>
+            <li><a class='dropdown-item' href='https://search.clinicalgenome.org/kb/gene-dosage/'><span class='text-muted'>Browse</span> Dosage Sensitivity</a></li>
+            <li><a class='dropdown-item' href='https://search.clinicalgenome.org/kb/actionability/'><span class='text-muted'>Browse</span> Clinical Actionability</a></li>
             <li><a class='dropdown-item' href='https://erepo.clinicalgenome.org/evrepo/'><span class='text-muted'>Browse</span> Variant Pathogenicity</a></li>
             
           </div>
