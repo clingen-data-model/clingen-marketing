@@ -203,7 +203,6 @@ th {
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
   }
-/*
   a,
   a:visited {
     text-decoration: underline;
@@ -218,7 +217,6 @@ th {
   a[href^="javascript:"]:after {
     content: "";
   }
-*/
   pre,
   blockquote {
     border: 1px solid #999;
