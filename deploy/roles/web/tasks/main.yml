@@ -65,7 +65,7 @@
   replace:
     path: /etc/php/7.0/apache2/php.ini
     regexp: '^memory_limit =.*$'
-    replace: 'memory_limit = 2048M'
+    replace: 'memory_limit = 256M'
 - name: set post_max_size
   replace:
     path: /etc/php/7.0/apache2/php.ini
