@@ -47,8 +47,8 @@ $body = str_replace("<li>", "<li><i class='fas fa-exclamation-triangle'></i> ", 
       if(!$submit_position) {
         $error .= "Missing your position...<br />";
       }
-      if(!$submit_feedbackType) {
-        $error .= "Missing a feedback type...<br />";
+      if(!$submit_feedbackType || !$submit_curationType) {
+        $error .= "Missing at least one feedback type...<br />";
       }
 
       if ($captcha->verifyResponse() === true) {
