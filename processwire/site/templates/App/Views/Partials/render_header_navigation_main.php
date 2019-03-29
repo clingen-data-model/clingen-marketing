@@ -72,13 +72,13 @@ foreach ($siteRoot->children as $key => $value) {
     }
     $nav_children = "
       <ul class=' {$option['dropdown-children-ul']}'>
-        <li class='col-md-6 float-left pt-1 pl-3 pr-4'>
+        <li class='col-md-6 col-sm-12 float-left pt-1 pl-3 pr-4'>
           <div class='text-muted'><strong>Gene Curation Expert Panels</strong></div>
           <ul class='list-unstyled border-top-1'>
             {$nav_child_gcep}
           </ul>
         </li>
-        <li class='col-md-6 float-left pt-1 pl-3 pr-4'>
+        <li class='col-md-6 col-sm-12 float-left pt-1 pl-3 pr-4'>
           <div class='text-muted'><strong>Variant Curation Expert Panels</strong></div>
           <ul class='list-unstyled border-top-1'>
             {$nav_child_vcep}
