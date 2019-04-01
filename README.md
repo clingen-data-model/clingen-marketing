@@ -16,6 +16,8 @@ After installing Ansible, it is also necessary to configure it to use the passwo
 
 site.yml is the master playbook for deploying the site. This playbook is idempotent and sufficient for both an initial deployment and incremental updates.
 
+This deployment process has been tested on Debian 9. It will likely work on any Debian-based system of similar vintage (Ubuntu 16.04 and up, for instance)
+
 When deploying the site for the first time, a couple steps must be performed manually: the pw database in MariaDB must be initialized and the site's assets must be uploaded. In future this will be automated.
 
 To run the deployment script, the following command will suffice once your secrets file is properly configured:
