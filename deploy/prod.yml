@@ -3,7 +3,7 @@ all:
   hosts:
     clinicalgenome.org
   vars:
-    http_host: "clinicalgenome.org"
+    http_host: "'clinicalgenome.org', 'www.clinicalgenome.org'" 
     mariadb_host: 127.0.0.1
     mariadb_dbname: pw
     mariadb_user: pw

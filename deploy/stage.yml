@@ -2,7 +2,7 @@ all:
   hosts:
     mkg-stage.clinicalgenome.org
   vars:
-    http_host: "mkg-stage.clinicalgenome.org"
+    http_host: "'mkg-stage.clinicalgenome.org'"
     mariadb_host: 127.0.0.1
     mariadb_dbname: pw
     mariadb_user: pw
