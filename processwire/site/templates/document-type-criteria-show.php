@@ -30,10 +30,10 @@ if(count($page->files_1)) {
     <i class='far fa-file text-muted'></i>
     </td>
     <td class='w-100 '>
-    <a href='{$page->file_1->url}' class='small'>{$support_file_name}</a>
+    <a href='{$support_file->url}' class='small'>{$support_file_name}</a>
     </td>
     <td class='pl-3'>
-    <a href='{$page->file_1->url}' class='btn btn-sm btn-outline-primary'><i class='fas fa-external-link-alt'></i> VIEW</a>
+    <a href='{$support_file->url}' class='btn btn-sm btn-outline-primary'><i class='fas fa-external-link-alt'></i> VIEW</a>
     </td>
     </tr>
     
