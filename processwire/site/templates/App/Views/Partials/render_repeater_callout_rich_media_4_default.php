@@ -3,7 +3,7 @@
 // Iterate through repeater_callout_rich_media_1
 // This include should be passed into the page with the data as $fetch
 
-if($fetch->count()) {
+if(count($fetch)) {
   foreach ($fetch as $key => $value) {
     
     foreach ($value->relate_pages as $keyA => $relate_page) {
