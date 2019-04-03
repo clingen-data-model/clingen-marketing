@@ -66,7 +66,7 @@ include("App/Views/Partials/render_search_bar.php");
 
   <div class="row">
     <div class="col-md-6">
-      <a href="http://localhost:3000/curations/" class="btn btn-block btn-lg btn-outline-primary">Browse All ClinGen's Curated Genes</a>
+      <a href="http://search.clinicalgenome.org/kb/curations" class="btn btn-block btn-lg btn-outline-primary">Browse All ClinGen's Curated Genes</a>
     </div>
     <div class="col-md-6"> 
       <a href="https://erepo.clinicalgenome.org/evrepo/" class="btn btn-block btn-lg btn-outline-primary" target="erepo">Browse All ClinGen's Curated Variants</a>
