@@ -30,6 +30,10 @@
   template:
     src: default-ssl.conf.j2
     dest: /etc/apache2/sites-available/default-ssl.conf
+- name: configure redirect to SSL
+  copy:
+    src: 000-default.conf
+    dest: /etc/apache2/sites-available/000-default.conf
 - name: Copy site cert
   copy:
     src: clinicalgenome.org.crt
