@@ -27,7 +27,7 @@ if($q = $sanitizer->selectorValue($input->get->q)) {
 			$summary = ($m->summary) ? $m->summary  : $m->user_title;
 
 			if($m->template == "user"){
-				$out .= "<li class='padding-bottom-md pb-2'><a class='padding-none text-bold strong' href='/about/people/{$m->user_name_last}-{$m->id}'>{$title}</a><div></li>";
+				$out .= "<li class='padding-bottom-md pb-2'><a class='padding-none text-bold strong' href='/about/people/staff/{$m->user_name_last}-{$m->id}'>{$title}</a><div></li>";
 			} else {
 				$out .= "<li class='padding-bottom-md pb-2'><a class='padding-none text-bold strong' href='{$m->httpUrl}'>{$title}</a><div><a href='{$m->httpUrl}' class='text-muted small'>{$m->httpUrl}</a></div>{$summary}</li>";
 
