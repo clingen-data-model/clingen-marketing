@@ -19,13 +19,19 @@ if($q = $sanitizer->selectorValue($input->get->q)) {
 		$out .= "<h6 class='pb-3 pt-3'>$count pages matching your query for '{$q}'.</h6>" . 
 		"<ul class='list-unstyled'>";
 
+
+
 		foreach($matches as $m) {
 			
 			$title = ($m->title) ? $m->title    : $m->user_name_full;
 			$summary = ($m->summary) ? $m->summary  : $m->user_title;
 
-			
-			$out .= "<li class='padding-bottom-md pb-2'><a class='padding-none text-bold strong' href='{$m->httpUrl}'>{$title}</a><div><a href='{$m->httpUrl}' class='text-muted small'>{$m->httpUrl}</a></div>{$summary}</li>";
+			if($m->template == "user"){
+				$out .= "<li class='padding-bottom-md pb-2'><a class='padding-none text-bold strong' href='/about/people/{$m->user_name_last}-{$m->id}}'>{$title}</a><div></li>";
+			} else {
+				$out .= "<li class='padding-bottom-md pb-2'><a class='padding-none text-bold strong' href='{$m->httpUrl}'>{$title}</a><div><a href='{$m->httpUrl}' class='text-muted small'>{$m->httpUrl}</a></div>{$summary}</li>";
+
+			}
 		}
 
 		$out .= "</ul>";
