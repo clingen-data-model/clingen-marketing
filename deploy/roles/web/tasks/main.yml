@@ -113,6 +113,10 @@
   template:
     src: config-sample.php.j2
     dest: /var/www/html/site/config.php
+- name: Stop httpd for site update
+  systemd:
+    state: stopped
+    name: apache2
 - name: Clean uploaded assets
   file:
     state: absent
