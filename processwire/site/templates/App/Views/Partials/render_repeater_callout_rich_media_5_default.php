@@ -27,7 +27,7 @@ if($fetch->count()) {
             <div class=\"col-md-9 bg-white\">
               <div class=\"card-body\">
                 {$httpUrlTitle}
-                <p class=\"small\">{$value->summary}</p>
+                <p class=\"small\">{$value->summary_rich_1}</p>
                 {$httpUrlButton}
               </div>
             </div>
@@ -47,7 +47,7 @@ if($fetch->count()) {
     unset($render_page_children_item);
   } 
   }
-  $render_rich_media_1 = "<div class='row' edit='repeater_callout_rich_media_1'>{$render_page_children_items}</div>";
+  $render_rich_media_5 = "<div class='row' edit='repeater_callout_rich_media_5'>{$render_page_children_items}</div>";
   unset($render_page_children_items);
   unset($render_page_children_item);
 }

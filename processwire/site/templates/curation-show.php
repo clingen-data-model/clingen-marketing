@@ -5,6 +5,9 @@
 $fetch = $page->repeater_callout_rich_media_1;
 include("App/Views/Partials/render_repeater_callout_rich_media_1_default.php"); 
 
+$fetch = $page->repeater_callout_rich_media_5;
+include("App/Views/Partials/render_repeater_callout_rich_media_5_default.php");
+
 ?>
 
 <?
@@ -36,7 +39,8 @@ include("App/Views/Partials/render_curation_tabs.php");
 	<span edit='body_2'>
 		<?=$page->body_2 ?>
 	</span>
-	<?=$render_rich_media_1 ?>
+	<? // $render_rich_media_1 ?>
+	<?=$render_rich_media_5 ?>
 	<span edit='body_3'>
 		<?=$page->body_3 ?>
 	</span>
