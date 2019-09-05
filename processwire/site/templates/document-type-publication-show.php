@@ -51,7 +51,7 @@ if($related_groups = $page->relate_groups) {
       
       <? if($page->url_general) { ?>
         <div class="line-height-normal mb-3">
-          <a class='btn btn-block btn-lg btn-success' target="_publication" href='<?=$page->url_general?>'>View Publication <i class="fas fa-external-link-alt"></i></a>
+          <a class='btn btn-block btn-lg btn-success' target="_publication" href='<?=$page->url_general?>'>View Citation <i class="fas fa-external-link-alt"></i></a>
         </div>
       <? } ?>
       

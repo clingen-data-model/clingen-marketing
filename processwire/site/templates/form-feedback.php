@@ -22,6 +22,8 @@ $body = str_replace("<li>", "<li><i class='fas fa-exclamation-triangle'></i> ", 
 
    if(!$sanitizer->name($input->post->input_feedback)) {
      if($session->CSRF->hasValidToken()) {
+       
+       
       $submit_page               = $sanitizer->url($input->post->input_page);
       $submit_page               = ($submit_page) ? $submit_page : $page->httpUrl;
       $submit_title              = $sanitizer->text($input->post->input_title);
@@ -32,9 +34,11 @@ $body = str_replace("<li>", "<li><i class='fas fa-exclamation-triangle'></i> ", 
       $submit_institution        = $sanitizer->text($input->post->input_institution);
       $submit_position           = $sanitizer->text($input->post->input_position);
       $submit_feedbackType       = $sanitizer->array($input->post->input_feedbackType);
-      $submit_curationType       = $sanitizer->array($input->post->input_curationType);
+      //$submit_curationType       = $sanitizer->array($input->post->input_curationType);
       $submit_comments           = $sanitizer->purify($sanitizer->textarea($input->post->input_comments));
+       
 
+       
       if(!$submit_name) {
         $error .= "Missing your name...<br />";
       }
@@ -47,7 +51,7 @@ $body = str_replace("<li>", "<li><i class='fas fa-exclamation-triangle'></i> ", 
       if(!$submit_position) {
         $error .= "Missing your position...<br />";
       }
-      if(!$submit_feedbackType || !$submit_curationType) {
+      if(!$submit_feedbackType) {
         $error .= "Missing at least one feedback type...<br />";
       }
 
@@ -82,7 +86,7 @@ $body = str_replace("<li>", "<li><i class='fas fa-exclamation-triangle'></i> ", 
         $bodyHTML .= "\r\n\r\n Comments/Message:\r\n    ". $submit_comments;
         $bodyHTML .= "\r\n\r\n Page URL:\r\n    ". $submit_page;
         $bodyHTML .= "\r\n\r\n Page Title:\r\n    ". $submit_title;
-        $bodyHTML .= "\r\n\r\n Curation Type:\r\n    ". $curationType;
+        //$bodyHTML .= "\r\n\r\n Curation Type:\r\n    ". $curationType;
         $bodyHTML .= "\r\n\r\n Feedback Type:\r\n    ". $feedbackType;
         $logthis = "CONTACT REQUEST - Name: ". $submit_name ." ||| Email: ". $submit_email ." ||| Institution: ". $submit_institution. " ||| Position: ". $submit_position. " ||| Comments: ". $submit_comments. " ||| Page URL: ". $submit_page. " ||| Page Title: ". $submit_title. " ||| Curation Type: ". $curationType. " |||  Feedback Type: ". $feedbackType;
         
@@ -180,35 +184,36 @@ $body = str_replace("<li>", "<li><i class='fas fa-exclamation-triangle'></i> ", 
     </div>
     <div class="col-md-8 order-md-2">
 
-      <h5 class="mb-0">Type of feedback</h5>
+      <h5 class="mb-0">Type of feedback (Required)</h5>
 
       <div class="d-block">
         <div class="custom-control">
-          <input id="credit" name="input_feedbackType" type="checkbox" class="custom-control-input"  value="General Feedback" <?= ($input_feedbackType == "General Feedback") ? "checked" : ""; ?>>
+          <input id="credit" name="input_feedbackType" type="checkbox" class="custom-control-input" value="General Feedback" <?= ($input_feedbackType == "General Feedback") ? "checked" : ""; ?>>
           <label class="custom-control-label text-normal" for="credit">General Feedback</label>
         </div>
+<!--
+        <div class="custom-control ml-4">
+          <label class="custom-control-label text-normal" for="curation">Feedback about curations or curation activity</label>
+        </div>
+-->
         <div class="custom-control">
-          <input id="curation" name="input_feedbackType" type="checkbox" class="custom-control-input"   value="Feedback about curation" <?= (in_array("Feedback about curation", $input_feedbackType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label text-normal" for="curation">Feedback about curation</label>
+          <input id="GeneDisease" name="input_feedbackType" type="checkbox" class="custom-control-input"  value="Variant Pathogenicity" <?= (in_array("Variant Pathogenicity", $input_feedbackType)) ? "checked" : ""; ?>>
+          <label class="custom-control-label text-normal" for="GeneDisease">Gene-Disease Validity Curation Activity</label>
         </div>
-        <div class="custom-control ml-4">
-          <input id="GeneDisease" name="input_curationType" type="checkbox" class="custom-control-input"  value="Variant Pathogenicity" <?= (in_array("Variant Pathogenicity", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label text-normal" for="GeneDisease">Gene-Disease Validity</label>
+        <div class="custom-control">
+          <input id="Variant" name="input_feedbackType" type="checkbox" class="custom-control-input"  value="Variant Pathogenicity" <?= (in_array("Variant Pathogenicity", $input_feedbackType)) ? "checked" : ""; ?>>
+          <label class="custom-control-label text-normal" for="Variant">Variant Pathogenicity Curation Activity</label>
         </div>
-        <div class="custom-control ml-4">
-          <input id="Variant" name="input_curationType" type="checkbox" class="custom-control-input"  value="Variant Pathogenicity" <?= (in_array("Variant Pathogenicity", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label text-normal" for="Variant">Variant Pathogenicity</label>
+        <div class="custom-control">
+          <input id="Actionability" name="input_feedbackType" type="checkbox" class="custom-control-input"  value="Clinical Actionability" <?= (in_array("Clinical Actionability", $input_feedbackType)) ? "checked" : ""; ?>>
+          <label class="custom-control-label text-normal" for="Actionability">Clinical Actionability Curation Activity</label>
         </div>
-        <div class="custom-control ml-4">
-          <input id="Actionability" name="input_curationType" type="checkbox" class="custom-control-input"  value="Clinical Actionability" <?= (in_array("Clinical Actionability", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label text-normal" for="Actionability">Clinical Actionability</label>
+        <div class="custom-control">
+          <input id="Dosage" name="input_feedbackType" type="checkbox" class="custom-control-input"  value="Dosage Sensitivity" <?= (in_array("Dosage Sensitivity", $input_feedbackType)) ? "checked" : ""; ?>>
+          <label class="custom-control-label text-normal" for="Dosage">Dosage Sensitivity Curation Activity</label>
         </div>
-        <div class="custom-control ml-4">
-          <input id="Dosage" name="input_curationType" type="checkbox" class="custom-control-input"  value="Dosage Sensitivity" <?= (in_array("Dosage Sensitivity", $input_curationType)) ? "checked" : ""; ?>>
-          <label class="custom-control-label text-normal" for="Dosage">Dosage Sensitivity</label>
-        </div>
-        <div class="custom-control ml-4">
-          <input id="Othertool" name="input_curationType" type="checkbox" class="custom-control-input"  value="Other Tool/Resource" <?= (in_array("Other Tool/Resource", $input_curationType)) ? "checked" : ""; ?>>
+        <div class="custom-control">
+          <input id="Othertool" name="input_feedbackType" type="checkbox" class="custom-control-input"input_feedbackType  value="Other Tool/Resource" <?= (in_array("Other Tool/Resource", $input_feedbackType)) ? "checked" : ""; ?>>
           <label class="custom-control-label text-normal" for="Othertool">Other Tool/Resource</label>
         </div>
         <div class="custom-control">
