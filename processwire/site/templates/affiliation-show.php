@@ -7,7 +7,7 @@ $seg_3         = $sanitizer->name($input->urlSegment3);
 
 if($seg_1 == 'docs'){
   if($seg_2 == 'assertion-criteria'){
-    $findit = $pages->find("relate_groups={$page->id}, template=document-type-criteria-show, sort=-document_version")->first();
+    $findit = $pages->find("relate_groups={$page->id}, template=document-type-criteria-show, sort=-document_criteria_version")->first();
 //        echo $findit;
 //        die();
     $session->redirect($findit->file_1->url);
