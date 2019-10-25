@@ -1,12 +1,9 @@
 # ClinGen Marketing Website
 
-This document is in Markdown. An HTML formatted version of this document 
-can be read at: https://github.com/processwire/processwire/blob/master/README.md
-
 
 ## Installing ProcessWire
 
-htaccess.txt
+htaccess.txt 
 config-sample.php
 
 
