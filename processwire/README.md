@@ -3,7 +3,7 @@
 
 ## Installing ProcessWire
 
-htaccess.txt 
+htaccess.txt  
 config-sample.php
 
 
