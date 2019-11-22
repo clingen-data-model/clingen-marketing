@@ -213,6 +213,21 @@ $render_clinvar_url .= "
   </div>
   ";
 }
+
+// Grab than partnership/affiliate for display of the icon.
+$relate_affiliates = $pages->find("template=partnership-show, relate_affiliates={$page->id}");
+if($relate_affiliates) {
+  $render_relate_affiliates_img .= "<hr /><div class='text-center text-muted small'>In collaboration with:</div>";
+  foreach($relate_affiliates as $relate_affiliate) {
+    $img = ($relate_affiliate->image_1) ? $relate_affiliate->image_1->width(800)->url : $config->imgSquareStandard;
+    $render_relate_affiliates_img .= "
+    <div class='mt-2'>
+    <a href='{$relate_affiliate->parent->httpUrl}' class='text-muted'><img src=\"{$img}\" class=\"card-img\" alt=\"{$relate_affiliate->title}\"></a>
+    <div class=\"text-center small text-muted\"><a href='{$relate_affiliate->parent->httpUrl}' class='text-muted small'>{$relate_affiliate->title}</a></div>
+    </div>
+    ";
+  }
+}
 ?>
 
 <div pw-replace="section_heading">
@@ -244,11 +259,11 @@ $render_clinvar_url .= "
 	<div class="row ">
   		<div class="col-sm-9">
         <h2 class="mb-0"><?=$page->title ?></h2>
+        <div class='mb-3'>
         <? if($page->relate_cdwg->httpUrl) { ?>
-        <div class="mb-3 small"><a href='<?=$page->relate_cdwg->httpUrl ?>' class='text-muted'>Affiliated to <?=$page->relate_cdwg->title ?></a></div>
-        <? } else { 
-          echo "<div class='mb-3'></div>";
-        } ?>
+        <div class="small"><a href='<?=$page->relate_cdwg->httpUrl ?>' class='text-muted'>Affiliated to <b><?=$page->relate_cdwg->title ?></b></a></div>
+        <? } ?>
+        </div>
         <?=$render_nav_pill ?>
         <hr />
         <span edit='body_1'>
@@ -258,18 +273,19 @@ $render_clinvar_url .= "
        </span>
        <?=$render_status_vcep ?>
        <?=$render_status_gcep ?>
+       <?=$render_documents ?>
+       <?=$render_annoucements ?>
+       <?=$render_tools ?>
+       <?=$render_membership ?>
      </div>
      <div class="col-sm-3 ">
        <div class="border-left-1 pl-3">
         <?=$render_membership_nav ?>
+        <?=$render_relate_affiliates_img ?>
       </div>
     </div>
 
-    <div class="col-sm-12">
-     <?=$render_documents ?>
-     <?=$render_annoucements ?>
-     <?=$render_tools ?>
-     <?=$render_membership ?>
-    </div>
+    <!--<div class="col-sm-12">
+    </div>-->
   </div>
 </div>
