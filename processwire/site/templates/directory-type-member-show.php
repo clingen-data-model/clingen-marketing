@@ -14,6 +14,20 @@ $groups = $pages->find("template=working-group-type-cdwg-index|working-group-typ
 
 $pastgroups = $pages->find("template=working-group-type-cdwg-index|working-group-type-cdwg-show|working-group-type-dpwg-index|working-group-type-dpwg-show|working-group-type-standard-index|working-group-type-standard-show|affiliation-show|affiliation-index, relate_user_members_past=$member, sort=title");
 
+if($member->relate_institutions->count()) {
+	foreach ($member->relate_institutions as $key => $value) {
+
+		$render_relate_institution .= "
+		<li class=''>
+		<a class='' href='{$value->httpUrl}'>{$value->title} <span class='sr-only'></span></a>
+		</li>
+		";
+	}
+	//$render_relate_institutions = "<hr /><h4 class='mt-4'>Affiliated Institution(s)</h4><ul class='list-unstyled'>".$render_relate_institution."</ul>";
+	$render_relate_institutions = "<ul class='list-unstyled'>".$render_relate_institution."</ul>"; 
+	unset($render_relate_institution);
+}
+
 if($groups->count()) {
 	foreach ($groups as $key => $value) {
 
@@ -53,12 +67,26 @@ if($pastgroups->count()) {
 
 <div pw-prepend="section_content">
 	<div class="row">
-		<div class="col-sm-3">
+		<div class="col-sm-3" edit="<?=$member->id?>.user_photo" >
 			<img src="<?=$img?>" class="img-thumbnail">
 		</div>
 		<div class="col-sm-6">
-			<h2><?=$member->user_name_full?></h2>
-			<?=$member->user_bio?>
+			<h2 edit="<?=$member->id?>.user_name_full"><?=$member->user_name_full?></h2>
+			<?php if($user->isSuperuser() || $user->hasRole('coordinator')) { ?>
+				<div edit="<?=$member->id?>.relate_institutions">
+					<?=($render_relate_institutions ? $render_relate_institutions : '<div>EDIT: Connect member with an institution(s)</div>')?>
+				</div>
+				<div edit="<?=$member->id?>.user_bio">
+					<?=($member->user_bio ? $member->user_bio : '<div>EDIT: Add a biography</div>')?>
+				</div>
+			<? } else { ?>
+				<div>
+					<?=$render_relate_institutions?>
+				</div>
+				<div>
+					<?=$member->user_bio?>
+				</div>
+			<? }  ?>
 			<?=$render_groups ?>
 			<?=$render_past_groups ?>
 		</div>
