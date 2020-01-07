@@ -1,6 +1,6 @@
 <?
 
-$fetch = $page->children;
+$fetch = $page->children("");
 if($fetch->count()) {
 	foreach ($fetch as $key => $value) {
 
@@ -14,12 +14,12 @@ if($fetch->count()) {
     }
     
     $members = $pages->find("template=user, relate_institutions=$value, sort=title");
+//    
+//    foreach ($members as $key_2 => $member) {
+//      $members_list .= "<li class='col-md-6'>".$member->user_name_full."</li>";
+//    }
     
-    foreach ($members as $key_2 => $member) {
-      $members_list .= "<li class='col-md-6'>".$member->user_name_full."</li>";
-    }
-    
-    //if($members->count() != 0) {
+    if($members->count() != 0) {
 		$render_page_children_item .= "
 		<tr class='row '>
 		  <td class=''>
@@ -30,7 +30,8 @@ if($fetch->count()) {
       </td>
 		</tr>
 		";
-    $render_children_count++;
+	}
+    //$render_children_count++;
 //      
 //    } else {
 //		$render_page_children_item_none .= "

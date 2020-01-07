@@ -67,26 +67,22 @@ if($pastgroups->count()) {
 
 <div pw-prepend="section_content">
 	<div class="row">
-		<div class="col-sm-3" edit="<?=$member->id?>.user_photo" >
+		<div class="col-sm-3">
 			<img src="<?=$img?>" class="img-thumbnail">
+			
+			<?php if($user->isSuperuser() || $user->hasRole('coordinator')) { ?>
+				<hr />
+				<a class='btn btn-primary btn-block' href='<?=$config->urls->admin."page/edit/?id=".$member->id ?>' target="profile"><i class='fas fa-edit'></i> Edit Member Profile <div class="small">Edit available to logged in coordinators</div></a>
+			<? }  ?>
 		</div>
 		<div class="col-sm-6">
-			<h2 edit="<?=$member->id?>.user_name_full"><?=$member->user_name_full?></h2>
-			<?php if($user->isSuperuser() || $user->hasRole('coordinator')) { ?>
-				<div edit="<?=$member->id?>.relate_institutions">
-					<?=($render_relate_institutions ? $render_relate_institutions : '<div>EDIT: Connect member with an institution(s)</div>')?>
-				</div>
-				<div edit="<?=$member->id?>.user_bio">
-					<?=($member->user_bio ? $member->user_bio : '<div>EDIT: Add a biography</div>')?>
-				</div>
-			<? } else { ?>
+			<h2><?=$member->user_name_full?></h2>
 				<div>
 					<?=$render_relate_institutions?>
 				</div>
 				<div>
 					<?=$member->user_bio?>
 				</div>
-			<? }  ?>
 			<?=$render_groups ?>
 			<?=$render_past_groups ?>
 		</div>
