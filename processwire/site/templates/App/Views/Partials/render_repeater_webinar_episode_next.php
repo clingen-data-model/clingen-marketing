@@ -46,7 +46,6 @@ if($fetch->count()) {
             </div>
           </div> 
         </div>
-		{$renderWatchLive}
       </div>
     ";
   
