@@ -40,6 +40,7 @@ if($page->repeater_callout_text_summary->count()) {
 if($page->repeater_callout_rich_media_6){
 	foreach ($page->repeater_callout_rich_media_6 as $key => $member) {
 		$presenter_img = ($member->image_1) ? $member->image_1->size(600,600)->url : $config->imgUserSquareStandard;
+		$key_members++;
 		$render_presenter .= "
 			<div class='col-sm-3 text-center mb-3'>
 				<div class='col-sm-12'><img src='{$presenter_img}' class='img-thumbnail' alt='{$member->user_name_full}'></div>
@@ -50,7 +51,7 @@ if($page->repeater_callout_rich_media_6){
 			</div>
 		";
 	}
-	$render_presenters = "<div class='row'>{$render_presenter}</div>";
+	$render_presenters = "{$render_presenter}";
 }
 
 
@@ -95,11 +96,23 @@ if($page->repeater_callout_rich_media_6){
 			<h3><?=$page->title ?></h3>
 		</div>
 		<div class="col-md-8">
-			<span edit='body_2'>
-				<?=$page->body_2 ?>
-			</span>
-			
-			<?=$render_presenters ?>
+			<? if($key_members == 1) { ?>
+				<div class="row">
+					<?=$render_presenters ?>
+					<div class="col-sm-9">
+						<span edit='body_2'>
+							<?=$page->body_2 ?>
+						</span>
+					</div>
+				</div>
+			<? } else { ?>
+				<span edit='body_2'>
+					<?=$page->body_2 ?>
+				</span>
+				<div class="row">
+				<?=$render_presenters ?>
+				</div>
+			<? } ?>
 		</div>
 		<div class="col-md-3 col-lg-offset-1">
 			<ul class="list-unstyled">
