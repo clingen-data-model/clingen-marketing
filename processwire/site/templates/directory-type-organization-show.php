@@ -57,7 +57,7 @@ if(count($members)) {
 		unset($render_ep_item);
 	}
 }
-$website = ($value->url_general) ? "<a href=\"$value->url_general\" target='_blank' class='title'>Website/a>" : "";
+$website = ($page->url_general) ? "<div><a href=\"$page->url_general\" target='_blank' class='title' >Website</a></div>" : "";
 
 foreach ($page->relate_countries as $key_1 => $country) {
       $countries .= $country->title."</br>";
