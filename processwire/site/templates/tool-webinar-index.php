@@ -9,7 +9,7 @@ include("App/Views/Partials/render_repeater_webinar_episode_all.php");
 
 $fetch = $page->children("template=tool-webinar-series-show, limit=1, event_date>today, sort=event_date");
 include("App/Views/Partials/render_repeater_webinar_episode_next.php"); 
-$fetch = $page->children("template=tool-webinar-series-show, limit=1, event_date<today, sort=event_date");
+$fetch = $page->children("template=tool-webinar-series-show, limit=1, event_date<today, sort=-event_date");
 include("App/Views/Partials/render_repeater_webinar_episode_recent.php");  
 
 ?>
