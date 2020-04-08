@@ -1,1 +1,7 @@
+User-agent: AhrefsBot
+Crawl-Delay: 10
+
 User-agent: *
+Crawl-Delay: 10
+
+Disallow: /clingen-tools-and-work-products/
